@@ -45,14 +45,15 @@ CMX = $(CMO:.cmo=.cmx)
 #############
 
 NAME=pa_log
+TARGET=$(CMO)
 
-all: $(CMO)
+all: $(TARGET)
 
 # installation
 ##############
 
-install: 
-	cp -f *.cmi $(CMO) "`$(CAMLP4R) -where`"
+install:
+	cp -f *.cmi $(TARGET) "`$(CAMLP4R) -where`"
 
 # generic rules
 ###############
