@@ -23,7 +23,7 @@ MANDIR=@mandir@
 
 # other variables set by ./configure
 OCAMLC   = @OCAMLC@
-CAMLP4R=@CAMLP4@
+CAMLP4R=@CAMLP4R@
 OCAMLLIB = @OCAMLLIB@
 OCAMLVERSION = @OCAMLVERSION@
 OCAMLWIN32 = @OCAMLWIN32@
@@ -34,13 +34,6 @@ P4=-pp $(CAMLP4R) -I +camlp4 -c
 BFLAGS = $(INCLUDES) $(P4)
 OFLAGS = $(INCLUDES) $(P4)
 
-# main target
-#############
-
-NAME=pa_log
-
-all: byte
-
 # bytecode and native-code compilation
 ######################################
 
@@ -48,10 +41,17 @@ CMO = pa_log
 CMO := $(addsuffix .cmo, $(CMO))
 CMX = $(CMO:.cmo=.cmx)
 
+# main target
+#############
+
+NAME=pa_log
+
+all: $(CMO)
+
 # installation
 ##############
 
-install-byte: 
+install: 
 	cp -f *.cmi $(CMO) $(OCAMLLIB)
 
 # generic rules
