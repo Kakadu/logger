@@ -52,7 +52,7 @@ all: $(CMO)
 ##############
 
 install: 
-	cp -f *.cmi $(CMO) `$(CAMLP4R) -where`
+	cp -f *.cmi $(CMO) "`$(CAMLP4R) -where`"
 
 # generic rules
 ###############
