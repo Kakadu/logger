@@ -52,8 +52,8 @@ all: $(CMO)
 ##############
 
 install: 
-	if ! test -d $(OCAMLLIB)/camlp4 ; then mkdir $(OCAMLLIB)/camlp4; fi
-	cp -f *.cmi $(CMO) $(OCAMLLIB)/camlp4
+	if ! test -d "$(OCAMLLIB)/camlp4" ; then mkdir "$(OCAMLLIB)/camlp4"; fi
+	cp -f *.cmi $(CMO) "$(OCAMLLIB)/camlp4"
 
 # generic rules
 ###############
