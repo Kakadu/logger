@@ -1687,7 +1687,7 @@ fi
 # platform
 echo "$as_me:$LINENO: checking Win32 platform" >&5
 echo $ECHO_N "checking Win32 platform... $ECHO_C" >&6
-if echo "let _ = Sys.os_type" | ocaml | grep -q Win32; then
+if echo "let _ = Sys.os_type;;" | ocaml | grep -q Win32; then
     echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
     OCAMLWIN32=yes
