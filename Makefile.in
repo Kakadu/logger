@@ -1,0 +1,117 @@
+#
+# sample Makefile for Objective Caml
+# Copyright (C) 2001 Jean-Christophe FILLIATRE
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Library General Public
+# License version 2, as published by the Free Software Foundation.
+# 
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# 
+# See the GNU Library General Public License version 2 for more details
+# (enclosed in the file LGPL).
+
+# where to install the binaries
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+BINDIR=@bindir@
+
+# where to install the man page
+MANDIR=@mandir@
+
+# other variables set by ./configure
+OCAMLC   = @OCAMLC@
+CAMLP4R=@CAMLP4@
+OCAMLLIB = @OCAMLLIB@
+OCAMLVERSION = @OCAMLVERSION@
+OCAMLWIN32 = @OCAMLWIN32@
+EXE = @EXE@
+
+INCLUDES = 
+P4=-pp $(CAMLP4R) -I +camlp4 -c
+BFLAGS = $(INCLUDES) $(P4)
+OFLAGS = $(INCLUDES) $(P4)
+
+# main target
+#############
+
+NAME=pa_log
+
+all: byte
+
+# bytecode and native-code compilation
+######################################
+
+CMO = pa_log
+CMO := $(addsuffix .cmo, $(CMO))
+CMX = $(CMO:.cmo=.cmx)
+
+# installation
+##############
+
+install-byte: 
+	cp -f *.cmi $(CMO) $(OCAMLLIB)
+
+# generic rules
+###############
+
+.SUFFIXES: .mli .ml .cmi .cmo .cmx .mll .mly .tex .dvi .ps .html
+
+.mli.cmi:
+	$(OCAMLC) -c $(BFLAGS) $<
+
+.ml.cmo:
+	$(OCAMLC) -c $(BFLAGS) $<
+
+.ml.o:
+	$(OCAMLOPT) -c $(OFLAGS) $<
+
+.ml.cmx:
+	$(OCAMLOPT) -c $(OFLAGS) $<
+
+.mll.ml:
+	$(OCAMLLEX) $<
+
+.mly.ml:
+	$(OCAMLYACC) -v $<
+
+.mly.mli:
+	$(OCAMLYACC) -v $<
+
+.tex.dvi:
+	latex $< && latex $<
+
+.dvi.ps:
+	dvips $< -o $@ 
+
+.tex.html:
+	hevea $<
+
+# Makefile is rebuilt whenever Makefile.in or configure.in is modified
+######################################################################
+
+Makefile: Makefile.in config.status
+	if test -e $@; then chmod a+w $@; fi		
+	./config.status
+	chmod a-w $@
+
+config.status: configure
+	./config.status --recheck
+
+configure: configure.in
+	autoconf 
+
+# clean
+#######
+
+clean:
+	rm -f *.cm[iox] *.o *~
+	rm -f $(GENERATED) parser.output
+	rm -f $(NAME).byte $(NAME).opt
+	rm -f *.haux *.aux *.log $(NAME).tex $(NAME).dvi $(DOCFILES)
+
+dist-clean distclean:: clean
+	rm -f Makefile config.cache config.log config.status *.byte *.opt
+
