@@ -7,13 +7,7 @@ SUBDIRS = regression
 SOURCES = pa_log.ml
 
 # CMO - all compiled objects
-# if ocamldsort wasn't found, just use sources
-@OCAMLDSORT_FALSE@CMO := $(SOURCES:.ml=.cmo)
-
-# if found, sort sources before use
-# (sorting is required for correct link order)
-@OCAMLDSORT_TRUE@SORTED = $(shell ocamldsort $(SOURCES))
-@OCAMLDSORT_TRUE@CMO := $(SORTED:.ml=.cmo)
+CMO := $(SOURCES:.ml=.cmo)
 
 # all compiled interfaces
 CMI := $(CMO:.cmo=.cmi)
@@ -46,7 +40,7 @@ CMX4CMXA = $(CMO4CMA:.cmo=.cmx)
 DOCFILES = $(PACKAGE).ps $(PACKAGE).html
 
 # build target
-TARGET := $(CMO) $(CMI) META
+TARGET := $(CMO) $(CMI)
 
 # OCaml parser call with flags
 #P4FLAGS := -pp "$(CAMLP4O) $(PARSER_INCLUDES) pa_log.cmo $(LOG)"
@@ -84,50 +78,18 @@ wc:
 clean-am:
 	rm -f $(TARGET) $(CMO) $(CMI) $(CLEAN_CMI) $(CMX) $(OBJ) $(LIB) $(CLEAN_EXTRA)
 
-# install with ocamlfind
-@OCAMLFIND_TRUE@install-data-am: $(TARGET)
-@OCAMLFIND_TRUE@	if test "$(SITELIBDIR)" != ""; then \
-@OCAMLFIND_TRUE@	    $(mkinstalldirs) $(SITELIBDIR); \
-@OCAMLFIND_TRUE@	    $(OCAMLFIND) install -destdir $(SITELIBDIR) $(PACKAGE) $(TARGET); \
-@OCAMLFIND_TRUE@	else \
-@OCAMLFIND_TRUE@	    $(OCAMLFIND) install $(PACKAGE) $(TARGET); \
-@OCAMLFIND_TRUE@	fi
-
 # manual install
-@OCAMLFIND_FALSE@install-data-am: $(TARGET)
-@OCAMLFIND_FALSE@	if test "$(SITELIBDIR)" = ""; then \
-@OCAMLFIND_FALSE@	    installdir=$(OCAMLLIB)/site-lib/$(PACKAGE); \
-@OCAMLFIND_FALSE@	else \
-@OCAMLFIND_FALSE@	    installdir=$(SITELIBDIR)/$(PACKAGE); \
-@OCAMLFIND_FALSE@	fi; \
-@OCAMLFIND_FALSE@	$(mkinstalldirs) $$installdir; \
-@OCAMLFIND_FALSE@	for i in $(TARGET); do \
-@OCAMLFIND_FALSE@	    $(INSTALL_DATA) $$i $$installdir/$$i; \
-@OCAMLFIND_FALSE@	done
-
-# install executables
-#install-exec-am: $(BYTE) $(NATIVE)
-#	$(mkinstalldirs) ${bindir}
-#	$(INSTALL_PROGRAM) $(BYTE) ${bindir}/$(BYTE)
-#	$(INSTALL_PROGRAM) $(NATIVE) ${bindir}/$(PACKAGE)
-
-# uninstall with ocamlfind
-@OCAMLFIND_TRUE@uninstall-am:
-@OCAMLFIND_TRUE@	if test "$(SITELIBDIR)" = ""; then \
-@OCAMLFIND_TRUE@	    $(OCAMLFIND) remove $(PACKAGE); \
-@OCAMLFIND_TRUE@	else \
-@OCAMLFIND_TRUE@	    rm -fR $(SITELIBDIR)/$(PACKAGE); \
-@OCAMLFIND_TRUE@	fi
-#	rm -f ${bindir}/$(BYTE) ${bindir}/$(PACKAGE)
+install-data-am: $(TARGET)
+	$(mkinstalldirs) $(CAMLP4LIB); \
+	for i in $(TARGET); do \
+	    $(INSTALL_DATA) $$i $(CAMLP4LIB)/$$i; \
+	done
 
 # manual uninstall
-@OCAMLFIND_FALSE@uninstall-am:
-@OCAMLFIND_FALSE@	if test "$(SITELIBDIR)" = ""; then \
-@OCAMLFIND_FALSE@	    rm -fR $(OCAMLLIB)/site-lib/$(PACKAGE); \
-@OCAMLFIND_FALSE@	else \
-@OCAMLFIND_FALSE@	    rm -fR $(SITELIBDIR)/$(PACKAGE); \
-@OCAMLFIND_FALSE@	fi
-#	rm -f ${bindir}/$(BYTE) ${bindir}/$(PACKAGE)
+uninstall-am:
+	for i in $(TARGET); do \
+	    rm -f $(CAMLP4LIB)/$$i; \
+	done
 
 # clean up docs in distclean mode
 distclean-am:
@@ -174,25 +136,6 @@ update-revision: VERSION
 	echo "Modify date: $$date" >> $$tmp_version; \
 	cat $$tmp_version > VERSION; \
 	rm -f $$tmp_version;
-
-# META description for package
-META:
-	@echo "Generating META description"; \
-	revision=`grep "\\$$Revision:" VERSION | sed -e 's,^\\$$,,' -e 's, \\$$$$,,'`; \
-	date=`LC_TIME=C date`; \
-	echo "version = \"$$revision\"" > $@; \
-	echo "description = \"Parser log module\"" >> $@; \
-	echo "requires = \"\"" >> $@; \
-	echo "archive(byte) = \"$(PACKAGE).cma\"" >> $@; \
-	echo "archive(native) = \"$(PACKAGE).cmxa\"" >> $@
-
-# save compiled revision into module
-version.ml:
-	@echo "Generating version.ml"; \
-	revision=`grep "\\$$Revision:" VERSION | sed -e 's,^\\$$,,' -e 's, \\$$$$,,'`; \
-	date=`LC_TIME=C date`; \
-	echo "let version = \"$$revision\"" > $@; \
-	echo "let date = \"$$date\"" >> $@
 
 # resolve compiling dependencies
 #.depend: $(SOURCES)

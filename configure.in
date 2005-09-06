@@ -14,14 +14,14 @@ AC_PROG_CAMLP4
 dnl ... for ocamlfind
 AC_PROG_FINDLIB
 dnl set OCAMLFIND_TRUE an OCAMLFIND_FALSE in Makefile
-AM_CONDITIONAL(OCAMLFIND, test "$have_ocamlfind" = "yes")
+dnl AM_CONDITIONAL(OCAMLFIND, test "$have_ocamlfind" = "yes")
 dnl ... for ocamldsort
 dnl AC_PROG_OCAMLDSORT
 dnl set OCAMLDSORT_TRUE an OCAMLDSORT_FALSE in Makefile
-AM_CONDITIONAL(OCAMLDSORT, test "$have_ocamldsort" = "yes")
+dnl AM_CONDITIONAL(OCAMLDSORT, test "$have_ocamldsort" = "yes")
 
 dnl add configure option "--with-sitelib"
-AC_ARG_OCAML_SITELIB
+dnl AC_ARG_OCAML_SITELIB
 
 dnl get the objects and executables extension
 AC_OBJEXT

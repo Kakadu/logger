@@ -271,7 +271,7 @@ PACKAGE_VERSION=
 PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot have_ocamlc have_ocamlopt have_ocamldotopt have_ocamloptdotopt have_ocamldep have_ocamlmktop have_ocamlmklib have_ocamldoc have_ocamlcc OCAMLC OCAMLVERSION OCAMLLIB OCAMLOPT OCAMLDEP OCAMLMKTOP OCAMLMKLIB OCAMLDOC have_ocamllex have_ocamllexdotopt have_ocamlyacc OCAMLLEX OCAMLYACC have_camlp4 have_camlp4o have_camlp4r CAMLP4 CAMLP4O CAMLP4R CAMLP4LIB have_ocamlfind OCAMLFIND OCAMLFIND_TRUE OCAMLFIND_FALSE OCAMLDSORT_TRUE OCAMLDSORT_FALSE SITELIBDIR CFLAGS PARSER_INCLUDES MODULE_INCLUDES DEBUG LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot have_ocamlc have_ocamlopt have_ocamldotopt have_ocamloptdotopt have_ocamldep have_ocamlmktop have_ocamlmklib have_ocamldoc have_ocamlcc OCAMLC OCAMLVERSION OCAMLLIB OCAMLOPT OCAMLDEP OCAMLMKTOP OCAMLMKLIB OCAMLDOC have_ocamllex have_ocamllexdotopt have_ocamlyacc OCAMLLEX OCAMLYACC have_camlp4 have_camlp4o have_camlp4r CAMLP4 CAMLP4O CAMLP4R CAMLP4LIB have_ocamlfind OCAMLFIND CFLAGS PARSER_INCLUDES MODULE_INCLUDES DEBUG LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -793,7 +793,6 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --without-findlib       do not use findlib package system
-  --with-sitelib=DIR      specify OCaml installation directory
 
 _ACEOF
 fi
@@ -2571,35 +2570,6 @@ fi
 
 
 
-if test "$have_ocamlfind" = "yes"; then
-  OCAMLFIND_TRUE=
-  OCAMLFIND_FALSE='#'
-else
-  OCAMLFIND_TRUE='#'
-  OCAMLFIND_FALSE=
-fi
-
-
-
-if test "$have_ocamldsort" = "yes"; then
-  OCAMLDSORT_TRUE=
-  OCAMLDSORT_FALSE='#'
-else
-  OCAMLDSORT_TRUE='#'
-  OCAMLDSORT_FALSE=
-fi
-
-
-
-
-# Check whether --with-sitelib or --without-sitelib was given.
-if test "${with_sitelib+set}" = set; then
-  withval="$with_sitelib"
-  SITELIBDIR="$withval"
-fi;
-
-
-
 
 
 
@@ -2883,20 +2853,6 @@ LIBOBJS=$ac_libobjs
 LTLIBOBJS=$ac_ltlibobjs
 
 
-if test -z "${OCAMLFIND_TRUE}" && test -z "${OCAMLFIND_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"OCAMLFIND\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"OCAMLFIND\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
-if test -z "${OCAMLDSORT_TRUE}" && test -z "${OCAMLDSORT_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"OCAMLDSORT\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"OCAMLDSORT\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
 
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
@@ -3462,11 +3418,6 @@ s,@CAMLP4R@,$CAMLP4R,;t t
 s,@CAMLP4LIB@,$CAMLP4LIB,;t t
 s,@have_ocamlfind@,$have_ocamlfind,;t t
 s,@OCAMLFIND@,$OCAMLFIND,;t t
-s,@OCAMLFIND_TRUE@,$OCAMLFIND_TRUE,;t t
-s,@OCAMLFIND_FALSE@,$OCAMLFIND_FALSE,;t t
-s,@OCAMLDSORT_TRUE@,$OCAMLDSORT_TRUE,;t t
-s,@OCAMLDSORT_FALSE@,$OCAMLDSORT_FALSE,;t t
-s,@SITELIBDIR@,$SITELIBDIR,;t t
 s,@CFLAGS@,$CFLAGS,;t t
 s,@PARSER_INCLUDES@,$PARSER_INCLUDES,;t t
 s,@MODULE_INCLUDES@,$MODULE_INCLUDES,;t t
