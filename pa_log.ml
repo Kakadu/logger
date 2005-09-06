@@ -1,21 +1,98 @@
+(** This module provides the syntax extensions to facilitate printing the 
+    log traces. Two extensions supplied: LOG and REPR.
+
+    LOG extends expression with the construction 
+
+    {C [LOG <view-specification> ( <expression> )]}
+
+    Here the [<view-specification>] is the optional comma-separated list
+    of identifiers enclosed in square brackets. Each listed identifier 
+    attaches the LOG expression to the corresponding view. Examples:
+
+    [LOG (Printf.printf "Log message\n")]
+
+    [LOG[firstView] (Printf.printf "First View\n")]
+
+    [LOG[secondView] (Printf.printf "Second View\n")]
+
+    [LOG[firstView, secondView] (Printf.printf "First and Second View\n")]
+
+    Here the first [LOG] expression attached to no views, second expression attached
+    to [firstView], third - to [secondView], and forth - to both [firstView] and [secondView].
+
+    By default all views are disbled and so substituted with expression [()]. To enable
+    certain view one has to pass the option [-VIEW viewName] to [camlp4] :
+
+    {C [ocamlc -pp "camlp4o pa_log.cmo -VIEW firstView" foo.ml]}
+
+    All [LOG] expressions attached to specified view will be enabled. There may be more
+    than one [-VIEW] option specified.
+
+    Finally the option [-LOG] enables {i all} [LOG] expressions regardless the
+    views.
+
+    REPR construction extends expression as well and has the form
+
+    {C [REPR ( <expression> )]}
+
+    Each REPR expression substituted with the pair. The first member of the pair is the
+    string representation of the expression given as an argument to [REPR], the second - 
+    its value. For example
+
+    [REPR (let x = 2 and y = 3 in x+y)]
+
+    replaced with the pair
+
+    [("let x = 2 and y = 3 in x+y", 5)]
+
+    The examples are given in the [regression] subdirectory.    
+*)
+
+(**/**)
+
 #load "pa_extend.cmo";
 #load "q_MLast.cmo";
+#load "pr_o.cmo";
 
 open Pcaml;
 
-value log_enabled = 
-  ref False
-;
+value log_enabled = ref False;
+value log_views = ref [];
 
 EXTEND
-  GLOBAL: expr str_item sig_item;
-  expr: LEVEL "top"
-    [ [ "LOG"; "("; e = expr; ")" ->
-          if log_enabled.val then e else <:expr<()>>
-    ] ]
-  ;
+  GLOBAL: expr;
+  expr: LEVEL "top" [ 
+    [ "REPR"; "("; e = expr; ")" -> let str = string_of pr_expr e in <:expr<($str:str$, $e$)>> ] |
+    [ "LOG"; args = args; "("; e = expr; ")" -> 
+        if log_enabled.val 
+        then e 
+        else match args with
+          [ None      -> <:expr<()>>
+          | Some list -> 
+            try
+              do {
+               ignore (List.find (fun view -> 
+                         try do {ignore (List.find (fun x -> x = view) list); True} with [Not_found -> False]
+                        ) 
+                        log_views.val
+                      ); 
+               e
+              }
+            with [Not_found -> <:expr<()>>]
+          ]
+    ] 
+  ];
+
+  args: [
+    [OPT arglist]
+  ];
+
+  arglist: [
+    ["["; list = LIST1 LIDENT SEP ","; "]" -> list]
+  ];
+
 END;
 
-Pcaml.add_option "-LOG" (Arg.Set log_enabled)
-  "<string> Define for IfDef instruction."
-;
+add_option "-LOG" (Arg.Set log_enabled) " - enable logging";
+add_option "-VIEW" (Arg.String (fun s -> log_views.val := [s :: log_views.val])) 
+           "<name> - enable logging the specified view";
