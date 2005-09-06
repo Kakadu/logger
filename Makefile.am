@@ -33,12 +33,14 @@ BYTE := $(addsuffix .byte, $(PACKAGE))
 # executable native bytecode
 NATIVE := $(addsuffix .opt, $(PACKAGE))
 
-# extra compiled libraries used for linking
+# add extra compiled libraries used for linking
 #EXTRA_CMA += $(addsuffix .cma, lib1 lib2)
 # extra compiled native libraries used for native linking
-#EXTRA_CMXA := $(EXTRA_CMA:.cma=.cmxa)
+EXTRA_CMXA := $(EXTRA_CMA:.cma=.cmxa)
 
+# sources for .cma linking
 CMO4CMA = $(CMO)
+# sources for .cmxa linking
 CMX4CMXA = $(CMO4CMA:.cmo=.cmx)
 
 DOCFILES = $(PACKAGE).ps $(PACKAGE).html
@@ -46,14 +48,14 @@ DOCFILES = $(PACKAGE).ps $(PACKAGE).html
 # build target
 TARGET := $(CMO) $(CMI) META
 
-# OCaml parser flags
+# OCaml parser call with flags
 #P4FLAGS := -pp "$(CAMLP4O) $(PARSER_INCLUDES) pa_log.cmo $(LOG)"
 P4FLAGS = -pp "$(CAMLP4R) $(PARSER_INCLUDES)"
 
 # how to run yard
 YARD := ocamlrun saved/yard
 
-# bytcode compiling flags
+# bytecode compiling flags
 BFLAGS = -w p -I $(OCAMLLIB)/camlp4 $(MODULE_INCLUDES) $(P4FLAGS) $(DEBUG)
 # native (optimized) compiling flags
 OFLAGS = -w p $(MODULE_INCLUDES) $(P4FLAGS) 
@@ -82,6 +84,7 @@ wc:
 clean-am:
 	rm -f $(TARGET) $(CMO) $(CMI) $(CLEAN_CMI) $(CMX) $(OBJ) $(LIB) $(CLEAN_EXTRA)
 
+# install with ocamlfind
 @OCAMLFIND_TRUE@install-data-am: $(TARGET)
 @OCAMLFIND_TRUE@	if test "$(SITELIBDIR)" != ""; then \
 @OCAMLFIND_TRUE@	    $(mkinstalldirs) $(SITELIBDIR); \
@@ -90,6 +93,7 @@ clean-am:
 @OCAMLFIND_TRUE@	    $(OCAMLFIND) install $(PACKAGE) $(TARGET); \
 @OCAMLFIND_TRUE@	fi
 
+# manual install
 @OCAMLFIND_FALSE@install-data-am: $(TARGET)
 @OCAMLFIND_FALSE@	if test "$(SITELIBDIR)" = ""; then \
 @OCAMLFIND_FALSE@	    installdir=$(OCAMLLIB)/site-lib/$(PACKAGE); \
@@ -101,17 +105,23 @@ clean-am:
 @OCAMLFIND_FALSE@	    $(INSTALL_DATA) $$i $$installdir/$$i; \
 @OCAMLFIND_FALSE@	done
 
+# install executables
 #install-exec-am: $(BYTE) $(NATIVE)
 #	$(mkinstalldirs) ${bindir}
 #	$(INSTALL_PROGRAM) $(BYTE) ${bindir}/$(BYTE)
 #	$(INSTALL_PROGRAM) $(NATIVE) ${bindir}/$(PACKAGE)
 
-uninstall-am:
+# uninstall with ocamlfind
+@OCAMLFIND_TRUE@uninstall-am:
 @OCAMLFIND_TRUE@	if test "$(SITELIBDIR)" = ""; then \
 @OCAMLFIND_TRUE@	    $(OCAMLFIND) remove $(PACKAGE); \
 @OCAMLFIND_TRUE@	else \
 @OCAMLFIND_TRUE@	    rm -fR $(SITELIBDIR)/$(PACKAGE); \
 @OCAMLFIND_TRUE@	fi
+#	rm -f ${bindir}/$(BYTE) ${bindir}/$(PACKAGE)
+
+# manual uninstall
+@OCAMLFIND_FALSE@uninstall-am:
 @OCAMLFIND_FALSE@	if test "$(SITELIBDIR)" = ""; then \
 @OCAMLFIND_FALSE@	    rm -fR $(OCAMLLIB)/site-lib/$(PACKAGE); \
 @OCAMLFIND_FALSE@	else \

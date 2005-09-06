@@ -1,5 +1,6 @@
 dnl -*- autoconf -*- macros for OCaml
-dnl by Olivier Andrieu and Grigory Batalov
+dnl by Grigory Batalov <bga@altlinux.org>, 2005
+dnl by Olivier Andrieu
 dnl from a configure.in by Jean-Christophe FilliUtre,
 dnl from a first script by Georges Mariano
 dnl
@@ -8,8 +9,6 @@ dnl and set the following variables :
 dnl   OCAMLC        "ocamlc" if present in the path, or a failure
 dnl                 or "ocamlc.opt" if present with same version number as ocamlc
 dnl   OCAMLOPT      "ocamlopt" (or "ocamlopt.opt" if present), or unset
-dnl   OCAMLBEST     either "byte" if no native compiler was found, 
-dnl                 "opt" otherwise
 dnl   OCAMLDEP      "ocamldep"
 dnl   OCAMLLIB      the path to the ocaml standard library
 dnl   OCAMLVERSION  the ocaml version number
@@ -204,7 +203,11 @@ AC_SUBST(OCAMLYACC)
 ])
 
 dnl
-dnl AC_PROG_CAMLP4 checks for Camlp4
+dnl macro AC_PROG_CAMLP4 will check Camlp4
+dnl   CAMLP4		"camlp4"
+dnl   CAMLP4O		"camlp4o"
+dnl   CAMLP4R		"camlp4r"
+dnl   CAMLP4LIB		parser library path
 AC_DEFUN([AC_PROG_CAMLP4], [
 AC_REQUIRE([AC_PROG_OCAML])
 dnl Checking for camlp4
@@ -241,19 +244,30 @@ dnl Checking for Camlp4r
 	fi
     fi
 fi
+
+dnl Searching for parser library path
+AC_MSG_CHECKING(for CamlP4 library path)
+CAMLP4LIB=$($CAMLP4 -where)
+AC_MSG_RESULT($CAMLP4LIB)
+if test "$CAMLP4LIB" = ""; then
+    AC_MSG_ERROR(CamlP4 library path)
+fi
+
 AC_SUBST(CAMLP4)
 AC_SUBST(CAMLP4O)
 AC_SUBST(CAMLP4R)
+AC_SUBST(CAMLP4LIB)
 ])
 
 dnl
-dnl macro AC_PROG_FINDLIB will check for the presence of
-dnl   ocamlfind if configure is called with --with-findlib
+dnl macro AC_PROG_FINDLIB will check for the presence of ocamlfind
+dnl disable by configure call with --without-findlib
+dnl   OCAMLFIND		"ocamlfind"
 AC_DEFUN([AC_PROG_FINDLIB], [
 AC_ARG_WITH(findlib,[  --without-findlib       do not use findlib package system],
-  use_findlib="$withval")
+  skip_findlib="$withval")
 dnl Checking for ocamlfind
-if ! test "$use_findlib" = no ; then 
+if ! test "$skip_findlib" = no ; then 
 	AC_CHECK_PROG(have_ocamlfind, ocamlfind, yes, no)
 	if test "$have_ocamlfind" = no; then
 	    AC_MSG_WARN(ocamlfind not found)
@@ -268,7 +282,7 @@ AC_SUBST(OCAMLFIND)
 ])
 
 dnl
-dnl macro AC_PROG_OCAMLDSORT will check OCamlDSort :
+dnl macro AC_PROG_OCAMLDSORT will check OCamlDSort
 dnl   OCAMLDSORT    "ocamldsort"
 AC_DEFUN([AC_PROG_OCAMLDSORT], [
 AC_CHECK_PROG(have_ocamldsort, ocamldsort, yes, no)
@@ -284,18 +298,20 @@ AC_SUBST(OCAMLDSORT)
 
 dnl
 dnl AC_ARG_OCAML_SITELIBR adds a --with-sitelib option
-dnl 1 -> where to install packages
+dnl   1 -> where to install OCaml packages
 AC_DEFUN([AC_ARG_OCAML_SITELIB], [
-AC_ARG_WITH(sitelib,[  --with-sitelib=DIR      specify installation directory],
+AC_ARG_WITH(sitelib,[  --with-sitelib=DIR      specify OCaml installation directory],
     SITELIBDIR="$withval")
 AC_SUBST(SITELIBDIR)
 ])
 
 dnl
 dnl AC_CHECK_OCAML_MODULE looks for a modules in a given path
-dnl 1 -> module to check
-dnl 2 -> capitalized names to use with open and for printing
-dnl 3 -> extra searching dirs
+dnl   1 -> module to check
+dnl   2 -> capitalized names to use with open
+dnl   3 -> extra searching dirs
+dnl   MODULE_INCLUDES	include options, i.e. "-I /path/to/dir"
+dnl   EXTRA_CMA		extra libraries to link with
 AC_DEFUN([AC_CHECK_OCAML_MODULE], [
 for module in $2; do
     AC_MSG_CHECKING(for $1 ($module))
@@ -308,7 +324,7 @@ dnl Check module "as is"
 	found=yes
     else
 	unset found
-        if ! test "$use_findlib" = no ; then 
+        if test "$skip_findlib" != "yes" -a "$OCAMLFIND" != ""; then 
 dnl Query package via ocamlfind
 	    if check_inc=`$OCAMLFIND query -i-format $1 2>/dev/null`; then
 		if $OCAMLC -c $MODULE_INCLUDES $check_inc conftest.ml > /dev/null 2>&1 ; then
@@ -320,7 +336,12 @@ dnl Query package via ocamlfind
 	fi
 	if ! test "$found"; then
 dnl Search through specified dirs
-	    for check_dir in $3 $SITELIBDIR/$1; do
+	    if test "$SITELIBDIR" != ""; then
+		dirs="$3 $SITELIBDIR/$1 $OCAMLLIB/$1"
+	    else
+		dirs="$3 $OCAMLLIB/$1"
+	    fi
+	    for check_dir in $dirs; do
 		if $OCAMLC -c -I $check_dir conftest.ml > /dev/null 2>&1 ; then
 		    MODULE_INCLUDES="$MODULE_INCLUDES -I $check_dir"
 		    result="adding -I $check_dir"
@@ -331,8 +352,9 @@ dnl Search through specified dirs
 	fi
     fi
 	
-    
+
     if test "$found" ; then
+dnl Try to link with library
 		if ! $OCAMLC -o conftest $MODULE_INCLUDES $1.cma conftest.cmo > /dev/null 2>&1 ; then
 		    AC_MSG_RESULT($1.cma not found)
 		    AC_MSG_ERROR(Required library $1 not found)
@@ -354,9 +376,10 @@ AC_SUBST(EXTRA_CMA)
 
 dnl
 dnl AC_CHECK_CAMLP4_MODULE looks for a module in a given path
-dnl 1 -> module to check
-dnl 2 -> file name to use with load
-dnl 3 -> extra searching dirs
+dnl   1 -> module to check
+dnl   2 -> file name to use with load
+dnl   3 -> extra searching dirs
+dnl   PARSER_INCLUDES		include options, i.e. "-I /path/to/dir"
 AC_DEFUN([AC_CHECK_CAMLP4_MODULE], [
 AC_MSG_CHECKING(for $1 ($2))
 cat > conftest.ml <<EOF
@@ -379,7 +402,12 @@ dnl Query package via ocamlfind
     fi
     if ! test "$found"; then
 dnl Search through specified dirs
-	for check_dir in $3 $SITELIBDIR/$1; do
+	if test "$SITELIBDIR" != ""; then
+	    dirs="$3 $SITELIBDIR/$1"
+	else
+	    dirs="$3"
+	fi
+	for check_dir in $dirs; do
 	    if $CAMLP4R -I $check_dir conftest.ml > /dev/null 2>&1 ; then
 		found=yes
 		break

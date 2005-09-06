@@ -52,12 +52,13 @@
 
 #load "pa_extend.cmo";
 #load "q_MLast.cmo";
-#load "pr_o.cmo";
 
 open Pcaml;
 
 value log_enabled = ref False;
 value log_views = ref [];
+
+value _ = Odyl_main.loadfile "pr_o.cmo";
 
 EXTEND
   GLOBAL: expr;
