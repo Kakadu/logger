@@ -271,7 +271,7 @@ PACKAGE_VERSION=
 PACKAGE_STRING=
 PACKAGE_BUGREPORT=
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot have_ocamlc have_ocamlopt have_ocamldotopt have_ocamloptdotopt have_ocamldep have_ocamlmktop have_ocamlmklib have_ocamldoc have_ocamlcc OCAMLC OCAMLVERSION OCAMLLIB OCAMLOPT OCAMLDEP OCAMLMKTOP OCAMLMKLIB OCAMLDOC have_ocamllex have_ocamllexdotopt have_ocamlyacc OCAMLLEX OCAMLYACC have_camlp4 have_camlp4o have_camlp4r CAMLP4 CAMLP4O CAMLP4R CAMLP4LIB have_ocamlfind OCAMLFIND CFLAGS PARSER_INCLUDES MODULE_INCLUDES DEBUG LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot have_ocamlc have_ocamlopt have_ocamldotopt have_ocamloptdotopt have_ocamldep have_ocamlmktop have_ocamlmklib have_ocamldoc have_ocamlcc OCAMLC OCAMLVERSION OCAMLLIB OCAMLOPT OCAMLDEP OCAMLMKTOP OCAMLMKLIB OCAMLDOC have_ocamllex have_ocamllexdotopt have_ocamlyacc OCAMLLEX OCAMLYACC have_camlp4 have_camlp4o have_camlp4r CAMLP4 CAMLP4O CAMLP4R CAMLP4LIB CFLAGS PARSER_INCLUDES MODULE_INCLUDES DEBUG LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -788,11 +788,6 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-debug          turn on debugging
-
-Optional Packages:
-  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
-  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
-  --without-findlib       do not use findlib package system
 
 _ACEOF
 fi
@@ -2514,62 +2509,6 @@ fi
 
 
 
-# Check whether --with-findlib or --without-findlib was given.
-if test "${with_findlib+set}" = set; then
-  withval="$with_findlib"
-  skip_findlib="$withval"
-fi;
-if ! test "$skip_findlib" = no ; then
-	# Extract the first word of "ocamlfind", so it can be a program name with args.
-set dummy ocamlfind; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_prog_have_ocamlfind+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  if test -n "$have_ocamlfind"; then
-  ac_cv_prog_have_ocamlfind="$have_ocamlfind" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_have_ocamlfind="yes"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-
-  test -z "$ac_cv_prog_have_ocamlfind" && ac_cv_prog_have_ocamlfind="no"
-fi
-fi
-have_ocamlfind=$ac_cv_prog_have_ocamlfind
-if test -n "$have_ocamlfind"; then
-  echo "$as_me:$LINENO: result: $have_ocamlfind" >&5
-echo "${ECHO_T}$have_ocamlfind" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-	if test "$have_ocamlfind" = no; then
-	    { echo "$as_me:$LINENO: WARNING: ocamlfind not found" >&5
-echo "$as_me: WARNING: ocamlfind not found" >&2;}
-	    unset OCAMLFIND
-	else
-	    OCAMLFIND=ocamlfind
-	fi
-else
-	unset OCAMLFIND
-fi
-
-
-
-
 
 
 
@@ -3416,8 +3355,6 @@ s,@CAMLP4@,$CAMLP4,;t t
 s,@CAMLP4O@,$CAMLP4O,;t t
 s,@CAMLP4R@,$CAMLP4R,;t t
 s,@CAMLP4LIB@,$CAMLP4LIB,;t t
-s,@have_ocamlfind@,$have_ocamlfind,;t t
-s,@OCAMLFIND@,$OCAMLFIND,;t t
 s,@CFLAGS@,$CFLAGS,;t t
 s,@PARSER_INCLUDES@,$PARSER_INCLUDES,;t t
 s,@MODULE_INCLUDES@,$MODULE_INCLUDES,;t t
