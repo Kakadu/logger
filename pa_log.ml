@@ -26,19 +26,19 @@
 
     LOG extends expression with the construction 
 
-    {C [LOG <view-specification> ( <expression> )]}
+    {[LOG <view-specification> ( <expression> )]}
 
     Here the [<view-specification>] is the optional comma-separated list
     of identifiers enclosed in square brackets. Each listed identifier 
     attaches the LOG expression to the corresponding view. Examples:
 
-    [LOG (Printf.printf "Log message\n")]
+    {[LOG (Printf.printf "Log message\n")]}
 
-    [LOG[firstView] (Printf.printf "First View\n")]
+    {[LOG[firstView] (Printf.printf "First View\n")]}
 
-    [LOG[secondView] (Printf.printf "Second View\n")]
+    {[LOG[secondView] (Printf.printf "Second View\n")]}
 
-    [LOG[firstView, secondView] (Printf.printf "First and Second View\n")]
+    {[LOG[firstView, secondView] (Printf.printf "First and Second View\n")]}
 
     Here the first [LOG] expression attached to no views, second expression attached
     to [firstView], third - to [secondView], and forth - to both [firstView] and [secondView].
@@ -46,7 +46,7 @@
     By default all views are disbled and so substituted with expression [()]. To enable
     certain view one has to pass the option [-VIEW viewName] to [camlp4] :
 
-    {C [ocamlc -pp "camlp4o pa_log.cmo -VIEW firstView" foo.ml]}
+    {[ocamlc -pp "camlp4o pa_log.cmo -VIEW firstView" foo.ml]}
 
     All [LOG] expressions attached to specified view will be enabled. There may be more
     than one [-VIEW] option specified.
@@ -56,19 +56,22 @@
 
     REPR construction extends expression as well and has the form
 
-    {C [REPR ( <expression> )]}
+    {[REPR ( <expression> )]}
 
     Each REPR expression substituted with the pair. The first member of the pair is the
     string representation of the expression given as an argument to [REPR], the second - 
     its value. For example
 
-    [REPR (let x = 2 and y = 3 in x+y)]
+    {[REPR (let x = 2 and y = 3 in x+y)]}
 
     replaced with the pair
 
-    [("let x = 2 and y = 3 in x+y", 5)]
+    {[("let x = 2 and y = 3 in x+y", 5)]}
 
-    The examples are given in the [regression] subdirectory.    
+    The examples are given in the [regression] subdirectory.
+    
+    @author Dmitri Boulytchev <db\@tepkom.ru>
+    @version 0.2
 *)
 
 (**/**)
