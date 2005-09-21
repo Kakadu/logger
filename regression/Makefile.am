@@ -1,12 +1,11 @@
 TESTS = test001 test002 test003 test004 test005 test006
 
-TESTS_ENVIRONMENT = ./test-log.sh
+TESTS_ENVIRONMENT = ./test.sh
 
 clean-am:
 	rm -f $(addsuffix .cmi, $(TESTS)) $(addsuffix .cmo, $(TESTS))
-	rm -f $(addsuffix .log, $(TESTS)) $(addsuffix .nolog, $(TESTS))
 	rm -f $(addsuffix -log, $(TESTS)) $(addsuffix -nolog, $(TESTS))
-	rm -f $(addsuffix .diff, $(TESTS))
+	rm -f *.diff *.log
 
 BFLAGS := -w p
 

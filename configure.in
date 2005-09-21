@@ -1,3 +1,5 @@
+dnl This file was synchronized with template ($Revision: 9 $)
+dnl
 dnl comments are started with dnl
 AC_INIT
 dnl project name and version
@@ -17,8 +19,6 @@ dnl set OCAMLFIND_TRUE an OCAMLFIND_FALSE in Makefile
 dnl AM_CONDITIONAL(OCAMLFIND, test "$have_ocamlfind" = "yes")
 dnl ... for ocamldsort
 dnl AC_PROG_OCAMLDSORT
-dnl set OCAMLDSORT_TRUE an OCAMLDSORT_FALSE in Makefile
-dnl AM_CONDITIONAL(OCAMLDSORT, test "$have_ocamldsort" = "yes")
 
 dnl add configure option "--with-sitelib"
 dnl AC_ARG_OCAML_SITELIB
@@ -31,7 +31,7 @@ AC_SUBST(CFLAGS)
 dnl check for parser module
 dnl usage:
 dnl module name, file name to use with "#load",
-dnl first dir <space> second dir <space> etc.
+dnl first dir <space> second dir <space> etc., module homepage.
 AC_CHECK_CAMLP4_MODULE(pa_extend, pa_extend.cmo, +camlp4)
 AC_CHECK_CAMLP4_MODULE(q_MLast, q_MLast.cmo, +camlp4)
 AC_CHECK_CAMLP4_MODULE(Pr_o, pr_o.cmo, +camlp4)
@@ -40,10 +40,10 @@ AC_SUBST(PARSER_INCLUDES)
 dnl check for compiler module
 dnl usage:
 dnl library name, modules to open,
-dnl 1st dir <space> 2nd dir <space> etc.
+dnl 1st dir <space> 2nd dir <space> etc., library homepage.
 dnl AC_CHECK_OCAML_MODULE(libname, Module1 Module2, ../libdir)
 dnl more module checks
-dnl AC_CHECK_OCAML_MODULE(libname, Module1 Module2, ../libdir)
+dnl AC_CHECK_OCAML_MODULE(libname, Module1 Module2, ../libdir, http://www.example.com/libname)
 AC_SUBST(MODULE_INCLUDES)
 
 dnl add configure option "--enable-log"

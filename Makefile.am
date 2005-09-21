@@ -57,7 +57,7 @@ OFLAGS = -w p $(MODULE_INCLUDES) $(P4FLAGS)
 # extra .cmi to delete those are generated from .ml
 #CLEAN_CMI := $(CMO:.cmo=.cmi)
 # other extra files to clean up
-CLEAN_EXTRA := .depend
+CLEAN_EXTRA := .depend doc wiki
 
 # default build:
 # - update timestamp
@@ -69,14 +69,19 @@ all-am: update-revision $(TARGET)
 doc: $(CMO)
 	mkdir -p doc
 	rm -f doc/*
-	$(OCAMLDOC) -pp "camlp4r pr_o.cmo" -d doc -html $(SOURCES) -I +camlp4
+	$(OCAMLDOC) -pp "camlp4r pr_o.cmo" $(MODULE_INCLUDES) $(P4FLAGS) -d doc -html -I +camlp4 *.ml
+
+wiki: $(CMO)
+	mkdir -p wiki
+	rm -f wiki/*
+	$(OCAMLDOC) -pp "camlp4r pr_o.cmo" $(MODULE_INCLUDES) $(P4FLAGS) -d wiki -g odoc_wiki.cmo -I +camlp4 *.ml
 
 wc:
 	ocamlwc -p *.mli *.ml
 
 # default clean
 clean-am:
-	rm -f $(TARGET) $(CMO) $(CMI) $(CLEAN_CMI) $(CMX) $(OBJ) $(LIB) $(CLEAN_EXTRA)
+	rm -fR $(CMO) $(CMI) $(CLEAN_CMI) $(CLEAN_EXTRA)
 
 # manual install
 install-data-am: $(TARGET)

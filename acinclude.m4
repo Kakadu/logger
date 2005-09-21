@@ -1,3 +1,5 @@
+dnl This file was synchronized with template ($Revision: 9 $)
+dnl
 dnl -*- autoconf -*- macros for OCaml
 dnl by Grigory Batalov <bga@altlinux.org>, 2005
 dnl by Olivier Andrieu
@@ -287,8 +289,8 @@ dnl   OCAMLDSORT    "ocamldsort"
 AC_DEFUN([AC_PROG_OCAMLDSORT], [
 AC_CHECK_PROG(have_ocamldsort, ocamldsort, yes, no)
 if test "$have_ocamldsort" = no; then
-    AC_MSG_WARN(Cannot find ocamldsort)
-    unset OCAMLDSORT
+    AC_MSG_WARN(Cannot find ocamldsort[,] using echo)
+    OCAMLDSORT=echo
 else
     OCAMLDSORT=ocamldsort
 fi
@@ -312,6 +314,7 @@ dnl   2 -> capitalized names to use with open
 dnl   3 -> extra searching dirs
 dnl   MODULE_INCLUDES	include options, i.e. "-I /path/to/dir"
 dnl   EXTRA_CMA		extra libraries to link with
+dnl 4 -> URL for module homepage
 AC_DEFUN([AC_CHECK_OCAML_MODULE], [
 for module in $2; do
     AC_MSG_CHECKING(for $1 ($module))
@@ -342,6 +345,11 @@ dnl Search through specified dirs
 		dirs="$3 $OCAMLLIB/$1"
 	    fi
 	    for check_dir in $dirs; do
+	    	builddir=`pwd`
+	    	case $check_dir in
+		    [[\\/+]]*) ;;
+		    *) check_dir="$builddir/$check_dir";;
+		esac
 		if $OCAMLC -c -I $check_dir conftest.ml > /dev/null 2>&1 ; then
 		    MODULE_INCLUDES="$MODULE_INCLUDES -I $check_dir"
 		    result="adding -I $check_dir"
@@ -357,6 +365,9 @@ dnl Search through specified dirs
 dnl Try to link with library
 		if ! $OCAMLC -o conftest $MODULE_INCLUDES $1.cma conftest.cmo > /dev/null 2>&1 ; then
 		    AC_MSG_RESULT($1.cma not found)
+	    	    if ! test -z "$4"; then
+			AC_MSG_WARN(Please[,] visit $4)
+	    	    fi
 		    AC_MSG_ERROR(Required library $1 not found)
 		else
 		    if ! echo "$EXTRA_CMA" | grep "$1.cma" > /dev/null 2>&1 ; then
@@ -380,6 +391,7 @@ dnl   1 -> module to check
 dnl   2 -> file name to use with load
 dnl   3 -> extra searching dirs
 dnl   PARSER_INCLUDES		include options, i.e. "-I /path/to/dir"
+dnl 4 -> URL for module homepage
 AC_DEFUN([AC_CHECK_CAMLP4_MODULE], [
 AC_MSG_CHECKING(for $1 ($2))
 cat > conftest.ml <<EOF
@@ -408,6 +420,11 @@ dnl Search through specified dirs
 	    dirs="$3"
 	fi
 	for check_dir in $dirs; do
+	    builddir=`pwd`
+	    case $check_dir in
+		[[\\/+]]*) ;;
+		*) check_dir="$builddir/$check_dir";;
+	    esac
 	    if $CAMLP4R -I $check_dir conftest.ml > /dev/null 2>&1 ; then
 		found=yes
 		break
@@ -418,6 +435,9 @@ dnl Search through specified dirs
 	    PARSER_INCLUDES="$PARSER_INCLUDES -I $check_dir"
 	else
 	    AC_MSG_RESULT(not found)
+	    if ! test -z "$4"; then
+		AC_MSG_WARN(Please[,] visit $4)
+	    fi
 	    AC_MSG_ERROR(Required module $1 not found)
 	fi
     fi
