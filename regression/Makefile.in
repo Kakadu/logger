@@ -57,20 +57,14 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-host_alias = @host_alias@
-host_triplet = @host@
 CAMLP4 = @CAMLP4@
 CAMLP4LIB = @CAMLP4LIB@
 CAMLP4O = @CAMLP4O@
 CAMLP4R = @CAMLP4R@
-CC = @CC@
 CFLAGS = @CFLAGS@
 DEBUG = @DEBUG@
 EXEEXT = @EXEEXT@
 EXTRA_CMA = @EXTRA_CMA@
-HAVE_LIB = @HAVE_LIB@
-LIB = @LIB@
-LTLIB = @LTLIB@
 MAKEINFO = @MAKEINFO@
 MODULE_INCLUDES = @MODULE_INCLUDES@
 OBJEXT = @OBJEXT@
@@ -120,7 +114,7 @@ DIST_COMMON =  Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -248,7 +242,7 @@ clean-am:
 	rm -f *.diff *.log
 
 test006-log: test006.ml
-	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) -I .. pa_log.cmo -LOG" -o $@ $<
+	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) -I .. pr_o.cmo pa_log.cmo -LOG" -o $@ $<
 
 test001-log: test001.ml
 	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) -I .. pa_log.cmo -LOG" -o $@ $<
@@ -263,7 +257,7 @@ test005-log: test005.ml
 	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) -I .. pa_log.cmo -VIEW $*" -o $@ $<
 
 %-nolog: %.ml
-	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) -I .. pa_log.cmo" -o $@ $<
+	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) -I .. pr_o.cmo pa_log.cmo" -o $@ $<
 
 $(TESTS): $(addsuffix -log, $(TESTS)) $(addsuffix -nolog, $(TESTS))
 
