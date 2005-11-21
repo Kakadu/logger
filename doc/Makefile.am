@@ -1,0 +1,14 @@
+# OCaml parser call with flags
+#AM_P4FLAGS := -pp "$(CAMLP4O) $(PARSER_INCLUDES) pa_log.cmo $(LOG)"
+AM_P4FLAGS = -pp "$(CAMLP4R) $(PARSER_INCLUDES)"
+
+# check if style.css already exists to avoid everytime generation
+all-am: html/style.css
+
+html/style.css:
+	$(OCAMLDOC) -pp "camlp4r pr_o.cmo" $(MODULE_INCLUDES) $(P4FLAGS) -d html -html \
+	-I $(top_srcdir)/src $(top_srcdir)/src/*.ml
+
+# default clean
+clean-am:
+	rm -fR html/*.html html/*.css

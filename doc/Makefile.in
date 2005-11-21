@@ -10,6 +10,9 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
+# OCaml parser call with flags
+#AM_P4FLAGS := -pp "$(CAMLP4O) $(PARSER_INCLUDES) pa_log.cmo $(LOG)"
+
 
 SHELL = @SHELL@
 
@@ -93,6 +96,7 @@ OCAMLYACC = @OCAMLYACC@
 OFLAGS = @OFLAGS@
 P4FLAGS = @P4FLAGS@
 PACKAGE = @PACKAGE@
+PARSER_INCLUDES = @PARSER_INCLUDES@
 SITELIBDIR = @SITELIBDIR@
 VERSION = @VERSION@
 ac_aux_dir = @ac_aux_dir@
@@ -114,21 +118,7 @@ have_ocamlopt = @have_ocamlopt@
 have_ocamloptdotopt = @have_ocamloptdotopt@
 have_ocamlyacc = @have_ocamlyacc@
 
-TESTS = test001 test002 test003 test004 test005 test006
-
-TESTS_ENVIRONMENT = ./test.sh
-
-PARSER_INCLUDES = @PARSER_INCLUDES@ -I $(top_srcdir)/src
-#MODULE_INCLUDES += -I $(top_srcdir)/src
-
-# OCaml parser call with flags
-#AM_P4FLAGS := -pp "$(CAMLP4O) $(PARSER_INCLUDES) pa_log.cmo $(LOG)"
-#AM_P4FLAGS = -pp "$(CAMLP4R) $(PARSER_INCLUDES)"
-
-# bytecode compiling flags
-AM_BFLAGS = -w p $(MODULE_INCLUDES) $(DEBUG)
-# native (optimized) compiling flags
-AM_OFLAGS = -w p $(MODULE_INCLUDES) $(DEBUG)
+AM_P4FLAGS = -pp "$(CAMLP4R) $(PARSER_INCLUDES)"
 mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_CLEAN_FILES = 
 DIST_COMMON =  Makefile.am Makefile.in
@@ -141,7 +131,7 @@ GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
-	cd $(top_srcdir) && $(AUTOMAKE) --foreign regression/Makefile
+	cd $(top_srcdir) && $(AUTOMAKE) --foreign doc/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
@@ -153,14 +143,14 @@ TAGS:
 
 distdir = $(top_builddir)/$(PACKAGE)-$(VERSION)/$(subdir)
 
-subdir = regression
+subdir = doc
 
 distdir: $(DISTFILES)
 	here=`cd $(top_builddir) && pwd`; \
 	top_distdir=`cd $(top_distdir) && pwd`; \
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
-	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign regression/Makefile
+	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --foreign doc/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  if test -d $$d/$$file; then \
@@ -171,37 +161,11 @@ distdir: $(DISTFILES)
 	    || cp -p $$d/$$file $(distdir)/$$file || :; \
 	  fi; \
 	done
-check-TESTS: $(TESTS)
-	@failed=0; all=0; \
-	srcdir=$(srcdir); export srcdir; \
-	for tst in $(TESTS); do \
-	  if test -f $$tst; then dir=.; \
-	  else dir="$(srcdir)"; fi; \
-	  if $(TESTS_ENVIRONMENT) $$dir/$$tst; then \
-	    all=`expr $$all + 1`; \
-	    echo "PASS: $$tst"; \
-	  elif test $$? -ne 77; then \
-	    all=`expr $$all + 1`; \
-	    failed=`expr $$failed + 1`; \
-	    echo "FAIL: $$tst"; \
-	  fi; \
-	done; \
-	if test "$$failed" -eq 0; then \
-	  banner="All $$all tests passed"; \
-	else \
-	  banner="$$failed of $$all tests failed"; \
-	fi; \
-	dashes=`echo "$$banner" | sed s/./=/g`; \
-	echo "$$dashes"; \
-	echo "$$banner"; \
-	echo "$$dashes"; \
-	test "$$failed" -eq 0
 info-am:
 info: info-am
 dvi-am:
 dvi: dvi-am
 check-am: all-am
-	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-am
 installcheck-am:
 installcheck: installcheck-am
@@ -250,7 +214,7 @@ maintainer-clean-am:  maintainer-clean-generic distclean-am
 
 maintainer-clean: maintainer-clean-am
 
-.PHONY: tags distdir check-TESTS info-am info dvi-am dvi check check-am \
+.PHONY: tags distdir info-am info dvi-am dvi check check-am \
 installcheck-am installcheck install-exec-am install-exec \
 install-data-am install-data install-am install uninstall-am uninstall \
 all-redirect all-am all installdirs mostlyclean-generic \
@@ -258,30 +222,16 @@ distclean-generic clean-generic maintainer-clean-generic clean \
 mostlyclean distclean maintainer-clean
 
 
+# check if style.css already exists to avoid everytime generation
+all-am: html/style.css
+
+html/style.css:
+	$(OCAMLDOC) -pp "camlp4r pr_o.cmo" $(MODULE_INCLUDES) $(P4FLAGS) -d html -html \
+	-I $(top_srcdir)/src $(top_srcdir)/src/*.ml
+
+# default clean
 clean-am:
-	rm -f $(addsuffix .cmi, $(TESTS)) $(addsuffix .cmo, $(TESTS))
-	rm -f $(addsuffix -log$(EXEEXT), $(TESTS)) $(addsuffix -nolog$(EXEEXT), $(TESTS))
-	rm -f *.diff *.log
-
-test006-log$(EXEEXT): test006.ml
-	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) $(PARSER_INCLUDES) pr_o.cmo pa_log.cmo -LOG" -o $@ $<
-
-test001-log$(EXEEXT): test001.ml
-	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) $(PARSER_INCLUDES) pr_o.cmo pa_log.cmo -LOG" -o $@ $<
-
-test004-log$(EXEEXT): test004.ml
-	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) $(PARSER_INCLUDES) pr_o.cmo pa_log.cmo -VIEW test002 -VIEW test003" -o $@ $<
-
-test005-log$(EXEEXT): test005.ml
-	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) $(PARSER_INCLUDES) pr_o.cmo pa_log.cmo -LOG -VIEW test002 -VIEW test003" -o $@ $<
-
-%-log$(EXEEXT): %.ml
-	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) $(PARSER_INCLUDES) pr_o.cmo pa_log.cmo -VIEW $*" -o $@ $<
-
-%-nolog$(EXEEXT): %.ml
-	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) $(PARSER_INCLUDES) pr_o.cmo pa_log.cmo" -o $@ $<
-
-$(TESTS): $(addsuffix -log$(EXEEXT), $(TESTS)) $(addsuffix -nolog$(EXEEXT), $(TESTS))
+	rm -fR html/*.html html/*.css
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

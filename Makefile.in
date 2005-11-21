@@ -10,8 +10,6 @@
 # even the implied warranty of MERCHANTABILITY or FITNESS FOR A
 # PARTICULAR PURPOSE.
 
-# define macros that creates directiries
-
 
 SHELL = @SHELL@
 
@@ -59,17 +57,27 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_alias = @build_alias@
+build_triplet = @build@
+host_alias = @host_alias@
+host_triplet = @host@
+target_alias = @target_alias@
+target_triplet = @target@
+BFLAGS = @BFLAGS@
 CAMLP4 = @CAMLP4@
 CAMLP4LIB = @CAMLP4LIB@
 CAMLP4O = @CAMLP4O@
 CAMLP4R = @CAMLP4R@
+CC = @CC@
 CFLAGS = @CFLAGS@
 DEBUG = @DEBUG@
 EXEEXT = @EXEEXT@
 EXTRA_CMA = @EXTRA_CMA@
+HAVE_LIB = @HAVE_LIB@
+LIB = @LIB@
+LTLIB = @LTLIB@
 MAKEINFO = @MAKEINFO@
 MODULE_INCLUDES = @MODULE_INCLUDES@
-OBJEXT = @OBJEXT@
 OCAMLC = @OCAMLC@
 OCAMLDEP = @OCAMLDEP@
 OCAMLDOC = @OCAMLDOC@
@@ -82,18 +90,21 @@ OCAMLMKTOP = @OCAMLMKTOP@
 OCAMLOPT = @OCAMLOPT@
 OCAMLVERSION = @OCAMLVERSION@
 OCAMLYACC = @OCAMLYACC@
+OFLAGS = @OFLAGS@
+P4FLAGS = @P4FLAGS@
 PACKAGE = @PACKAGE@
 PARSER_INCLUDES = @PARSER_INCLUDES@
 SITELIBDIR = @SITELIBDIR@
 VERSION = @VERSION@
+ac_aux_dir = @ac_aux_dir@
 have_camlp4 = @have_camlp4@
 have_camlp4o = @have_camlp4o@
 have_camlp4r = @have_camlp4r@
 have_ocamlc = @have_ocamlc@
 have_ocamlcc = @have_ocamlcc@
+have_ocamlcdotopt = @have_ocamlcdotopt@
 have_ocamldep = @have_ocamldep@
 have_ocamldoc = @have_ocamldoc@
-have_ocamldotopt = @have_ocamldotopt@
 have_ocamldsort = @have_ocamldsort@
 have_ocamlfind = @have_ocamlfind@
 have_ocamllex = @have_ocamllex@
@@ -104,75 +115,17 @@ have_ocamlopt = @have_ocamlopt@
 have_ocamloptdotopt = @have_ocamloptdotopt@
 have_ocamlyacc = @have_ocamlyacc@
 
-mkinstalldirs = $(INSTALL_SCRIPT) -d
-
-SUBDIRS = regression
-
-# type in sources here
-SOURCES = pa_log.ml
-
-# CMO - all compiled objects
-CMO := $(SOURCES:.ml=.cmo)
-
-# all compiled interfaces
-CMI := $(CMO:.cmo=.cmi)
-# all compiled native objects (OCaml' runtime)
-CMX := $(CMO:.cmo=.cmx)
-# all compiled native objects (separated)
-OBJ := $(CMO:.cmo=.o)
-
-# compiled library
-CMA := $(addsuffix .cma, $(PACKAGE))
-# compiled native library (OCaml' runtime)
-CMXA := $(addsuffix .cmxa, $(PACKAGE))
-# compiled native library (separated)
-LIB := $(addsuffix .a, $(PACKAGE))
-# executable bytecode
-BYTE := $(addsuffix .byte, $(PACKAGE))
-# executable native bytecode
-NATIVE := $(addsuffix .opt, $(PACKAGE))
-
-# add extra compiled libraries used for linking
-#EXTRA_CMA += $(addsuffix .cma, lib1 lib2)
-# extra compiled native libraries used for native linking
-EXTRA_CMXA := $(EXTRA_CMA:.cma=.cmxa)
-
-# sources for .cma linking
-CMO4CMA = $(CMO)
-# sources for .cmxa linking
-CMX4CMXA = $(CMO4CMA:.cmo=.cmx)
-
-DOCFILES = $(PACKAGE).ps $(PACKAGE).html
-
-# build target
-TARGET := $(CMO) $(CMI)
-
-# OCaml parser call with flags
-#P4FLAGS := -pp "$(CAMLP4O) $(PARSER_INCLUDES) pa_log.cmo $(LOG)"
-P4FLAGS = -pp "$(CAMLP4R) $(PARSER_INCLUDES)"
-
-# how to run yard
-YARD := ocamlrun saved/yard
-
-# bytecode compiling flags
-BFLAGS = -w p -I $(OCAMLLIB)/camlp4 $(MODULE_INCLUDES) $(P4FLAGS) $(DEBUG)
-# native (optimized) compiling flags
-OFLAGS = -w p $(MODULE_INCLUDES) $(P4FLAGS) 
-
-# extra .cmi to delete those are generated from .ml
-#CLEAN_CMI := $(CMO:.cmo=.cmi)
-# other extra files to clean up
-CLEAN_EXTRA := .depend doc wiki
+SUBDIRS = src doc regression
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
+mkinstalldirs = $(SHELL) $(top_srcdir)/config/mkinstalldirs
 CONFIG_CLEAN_FILES = 
-DIST_COMMON =  COPYING Makefile.am Makefile.in acinclude.m4 aclocal.m4 \
-config.guess config.sub configure configure.in install-sh missing \
-mkinstalldirs
+DIST_COMMON =  COPYING Makefile.am Makefile.in aclocal.m4 configure \
+configure.in
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:
@@ -183,7 +136,7 @@ Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
 	cd $(top_builddir) \
 	  && CONFIG_FILES=$@ CONFIG_HEADERS= $(SHELL) ./config.status
 
-$(ACLOCAL_M4):  configure.in  acinclude.m4
+$(ACLOCAL_M4):  configure.in 
 	cd $(srcdir) && $(ACLOCAL)
 
 config.status: $(srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
@@ -203,7 +156,7 @@ $(srcdir)/configure: $(srcdir)/configure.in $(ACLOCAL_M4) $(CONFIGURE_DEPENDENCI
 all-recursive install-data-recursive install-exec-recursive \
 installdirs-recursive install-recursive uninstall-recursive  \
 check-recursive installcheck-recursive info-recursive dvi-recursive:
-	@set fnord $(MAKEFLAGS); amf=$$2; \
+	@set fnord $$MAKEFLAGS; amf=$$2; \
 	dot_seen=no; \
 	target=`echo $@ | sed s/-recursive//`; \
 	list='$(SUBDIRS)'; for subdir in $$list; do \
@@ -223,7 +176,7 @@ check-recursive installcheck-recursive info-recursive dvi-recursive:
 
 mostlyclean-recursive clean-recursive distclean-recursive \
 maintainer-clean-recursive:
-	@set fnord $(MAKEFLAGS); amf=$$2; \
+	@set fnord $$MAKEFLAGS; amf=$$2; \
 	dot_seen=no; \
 	rev=''; list='$(SUBDIRS)'; for subdir in $$list; do \
 	  rev="$$subdir $$rev"; \
@@ -269,7 +222,7 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) $(LISP)
 	  awk '    { files[$$0] = 1; } \
 	       END { for (i in files) print i; }'`; \
 	test -z "$(ETAGS_ARGS)$$unique$(LISP)$$tags" \
-	  || (cd $(srcdir) && etags -o $$here/TAGS $(ETAGS_ARGS) $$tags  $$unique $(LISP))
+	  || (cd $(srcdir) && etags $(ETAGS_ARGS) $$tags  $$unique $(LISP) -o $$here/TAGS)
 
 mostlyclean-tags:
 
@@ -377,6 +330,8 @@ clean-generic:
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+
+maintainer-clean-generic:
 mostlyclean-am:  mostlyclean-tags mostlyclean-generic
 
 mostlyclean: mostlyclean-recursive
@@ -411,139 +366,6 @@ uninstall-am uninstall all-redirect all-am all installdirs-am \
 installdirs mostlyclean-generic distclean-generic clean-generic \
 maintainer-clean-generic clean mostlyclean distclean maintainer-clean
 
-
-# default build:
-# - update timestamp
-# - build default target
-# - build bytecode and optimized native code
-all-am: update-revision $(TARGET)
-
-# how to build documentation
-doc: $(CMO)
-	mkdir -p doc
-	rm -f doc/*
-	$(OCAMLDOC) -pp "camlp4r pr_o.cmo" $(MODULE_INCLUDES) $(P4FLAGS) -d doc -html -I +camlp4 *.ml
-
-wiki: $(CMO)
-	mkdir -p wiki
-	rm -f wiki/*
-	$(OCAMLDOC) -pp "camlp4r pr_o.cmo" $(MODULE_INCLUDES) $(P4FLAGS) -d wiki -g odoc_wiki.cmo -I +camlp4 *.ml
-
-wc:
-	ocamlwc -p *.mli *.ml
-
-# default clean
-clean-am:
-	rm -fR $(CMO) $(CMI) $(CLEAN_CMI) $(CLEAN_EXTRA)
-
-# manual install
-install-data-am: $(TARGET)
-	$(mkinstalldirs) $(CAMLP4LIB); \
-	for i in $(TARGET); do \
-	    $(INSTALL_DATA) $$i $(CAMLP4LIB)/$$i; \
-	done
-
-# manual uninstall
-uninstall-am:
-	for i in $(TARGET); do \
-	    rm -f $(CAMLP4LIB)/$$i; \
-	done
-
-# clean up docs in distclean mode
-distclean-am:
-	rm -fR doc
-
-# cleanup autogenerated scripts in maintainer-clean mode
-maintainer-clean-generic:
-	rm -rf $(top_srcdir)/autom4te.cache $(CLEAN_EXTRA)
-
-# what is byte-code target
-byte-code: $(BYTE)
-
-# how to build bytecode target
-$(BYTE): $(CMO)
-	$(OCAMLC) $(BFLAGS) -o $@ $(EXTRA_CMA) $(CMO)
-
-# what is native-code target
-native-code: $(NATIVE)
-
-# how to build native code target
-$(NATIVE): $(CMX)
-	$(OCAMLOPT) $(OFLAGS) -o $@ $(EXTRA_CMXA) $(CMX)
-
-# shorter acronims
-bc: byte-code
-nc: native-code
-
-# how to build library
-$(CMA): $(CMO4CMA)
-	$(OCAMLC) -a -o $@ $(CMO4CMA)
-
-# how to build native optimized library
-$(CMXA): $(CMX4CMXA)
-	$(OCAMLOPT) -a -o $@ $(CMX4CMXA)
-
-# every build updates timestamp, so following commit
-# will increase revision
-update-revision: VERSION
-	@umask 022; \
-	tmp_version=`mktemp VERSION.XXXXXX`; \
-	revision=`grep "\\$$Revision:" VERSION | sed -e 's,^\\$$,,' -e 's, \\$$$$,,'`; \
-	date=`LC_TIME=C date`; \
-	echo "\$$$$revision \$$" > $$tmp_version; \
-	echo "Modify date: $$date" >> $$tmp_version; \
-	cat $$tmp_version > VERSION; \
-	rm -f $$tmp_version;
-
-# resolve compiling dependencies
-#.depend: $(SOURCES)
-#	ocamldep *.mli *.ml > .depend
-
--include .depend
-
-# generic rules
-###############
-%.cmi: %.mli
-	$(OCAMLC) -c $(BFLAGS) $<
-
-# Note: cmi <- mli should go first
-%.cmi: %.ml
-	$(OCAMLC) -c $(BFLAGS) $<
-
-%.cmo: %.ml
-	$(OCAMLC) -c $(BFLAGS) $<
-
-%.o: %.ml
-	$(OCAMLOPT) -c $(OFLAGS) $<
-
-%.cmx: %.ml
-	$(OCAMLOPT) -c $(OFLAGS) $<
-
-%.ml: %.mll
-	$(OCAMLLEX) $<
-
-%.ml: %.mly
-	$(OCAMLYACC) -v $<
-
-%.mli: %.mly
-	$(OCAMLYACC) -v $<
-
-%.dvi: %.tex
-	latex $< && latex $<
-
-%.ps: %.dvi
-	dvips $< -o $@ 
-
-%.html: %.tex
-	hevea $<
-
-# make .tex from .ml
-$(NAME).tex: $(SOURCES)
-	$(OCAMLWEB) -o $@ $^
-
-# yard scripts
-%TokenKind.ml %.ml: %.yrd
-	$(YARD) $< -o $* -gen combi -nums
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

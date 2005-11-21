@@ -18,7 +18,7 @@
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  *
  *  See the GNU Lesser General Public License version 2.1 for more details
- *  (enclosed in the file LGPL).
+ *  (enclosed in the file COPYING).
  **************************************************************************)
 
 (** This module provides the syntax extensions to facilitate printing the 

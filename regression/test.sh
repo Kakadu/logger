@@ -8,10 +8,14 @@ fi
 TEST=$1
 ERROR=0
 
-RUN="${TEST}-log ${TEST}-nolog"
+# List of program to run
+RUN="${TEST}-log${EXEEXT} ${TEST}-nolog${EXEEXT}"
+# Program arguments. Could be empty.
 ARGS=""
+# Logs or other outputs to check
 CHECKS="${TEST}-log.log ${TEST}-nolog.log"
 
+# Check if all executables are present
 for i in ${RUN}; do
     if [ ! -x ${i} ]; then
 	echo "File ${i} does not exist or not executable"
@@ -23,16 +27,19 @@ if [ ${ERROR} -gt 0 ]; then
     exit ${ERROR}
 fi
 
+# Add current dir to search path
 OLDPATH=${PATH}
 PATH=.:${PATH}
 
 for i in ${RUN}; do
-    log=`basename ${i}`
+    log=`basename ${i} ${EXEEXT}`
     ${i} ${ARGS} > ${log}.log
 done
 
+# Restore search path
 PATH=${OLDPATH}
 
+# Compare check outputs to saved samples
 for i in ${CHECKS}; do
     if ! diff -u orig/${i} ${i} > ${i}.diff; then
 	echo "${TEST}: FAILED (see ${i}.diff)"

@@ -67,8 +67,8 @@ else
 fi
 
 dnl Checking for ocamlc.opt
-AC_CHECK_PROG(have_ocamldotopt, ocamlc.opt, yes, no)
-if test "$have_ocamldotopt" = "no"; then
+AC_CHECK_PROG(have_ocamlcdotopt, ocamlc.opt, yes, no)
+if test "$have_ocamlcdotopt" = "no"; then
     unset OCAMLCDOTOPT
 else
     OCAMLCDOTOPT=ocamlc.opt
@@ -156,10 +156,25 @@ if test "$have_ocamlopt" ; then
     if test "$have_ocamlcc" = "no"; then
 	AC_MSG_WARN(Cannot find OCaml C compiler ($OCAMLCC); bytecode compilation only)
 	unset OCAMLOPT
+    else
+	CC=$OCAMLC
+	touch conftest.ml
+	ac_ext=ml
+	_AC_COMPILER_EXEEXT_DEFAULT
+	_AC_COMPILER_EXEEXT_WORKS
+	_AC_COMPILER_EXEEXT_O
+	rm -f a.out
+	AC_SUBST([EXEEXT], [$ac_cv_exeext])dnl
     fi
 fi
+m4_pattern_allow([^AM_BFLAGS$])
+m4_pattern_allow([^AM_OFLAGS$])
+BFLAGS='$(AM_BFLAGS)'
+OFLAGS='$(AM_OFLAGS)'
 
 AC_SUBST(OCAMLC)
+AC_SUBST(BFLAGS)
+AC_SUBST(OFLAGS)
 AC_SUBST(OCAMLVERSION)
 AC_SUBST(OCAMLLIB)
 AC_SUBST(OCAMLOPT)
@@ -255,7 +270,11 @@ if test "$CAMLP4LIB" = ""; then
     AC_MSG_ERROR(CamlP4 library path)
 fi
 
+m4_pattern_allow([^AM_P4FLAGS$])
+P4FLAGS='$(AM_P4FLAGS)'
+
 AC_SUBST(CAMLP4)
+AC_SUBST(P4FLAGS)
 AC_SUBST(CAMLP4O)
 AC_SUBST(CAMLP4R)
 AC_SUBST(CAMLP4LIB)
