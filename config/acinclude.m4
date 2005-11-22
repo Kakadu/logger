@@ -156,17 +156,21 @@ if test "$have_ocamlopt" ; then
     if test "$have_ocamlcc" = "no"; then
 	AC_MSG_WARN(Cannot find OCaml C compiler ($OCAMLCC); bytecode compilation only)
 	unset OCAMLOPT
-    else
-	CC=$OCAMLC
-	touch conftest.ml
-	ac_ext=ml
-	_AC_COMPILER_EXEEXT_DEFAULT
-	_AC_COMPILER_EXEEXT_WORKS
-	_AC_COMPILER_EXEEXT_O
-	rm -f a.out
-	AC_SUBST([EXEEXT], [$ac_cv_exeext])dnl
     fi
+    rm -f conftest.c
 fi
+
+dnl Determine executable extension
+CC=$OCAMLC
+touch conftest.ml
+ac_ext=ml
+ac_link="$CC conftest.ml && ( rm -f conftest.cm?; test -f camlprog.exe && mv camlprog.exe a.exe || true )"
+_AC_COMPILER_EXEEXT_DEFAULT
+_AC_COMPILER_EXEEXT_WORKS
+_AC_COMPILER_EXEEXT_O
+rm -f a.out a.exe
+AC_SUBST([EXEEXT], [$ac_cv_exeext])dnl
+
 m4_pattern_allow([^AM_BFLAGS$])
 m4_pattern_allow([^AM_OFLAGS$])
 BFLAGS='$(AM_BFLAGS)'
