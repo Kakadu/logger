@@ -2153,11 +2153,15 @@ fi
 	{ echo "$as_me:$LINENO: WARNING: Cannot find OCaml C compiler ($OCAMLCC); bytecode compilation only" >&5
 echo "$as_me: WARNING: Cannot find OCaml C compiler ($OCAMLCC); bytecode compilation only" >&2;}
 	unset OCAMLOPT
-    else
-	CC=$OCAMLC
-	touch conftest.ml
-	ac_ext=ml
-	# Try to create an executable without -o first, disregard a.out.
+    fi
+    rm -f conftest.c
+fi
+
+CC=$OCAMLC
+touch conftest.ml
+ac_ext=ml
+ac_link="$CC conftest.ml && ( rm -f conftest.cm?; test -f camlprog.exe && mv camlprog.exe a.exe || true )"
+# Try to create an executable without -o first, disregard a.out.
 # It will help us diagnose broken compilers, and finding out an intuition
 # of exeext.
 echo "$as_me:$LINENO: checking for C compiler default output file name" >&5
@@ -2215,7 +2219,7 @@ ac_exeext=$ac_cv_exeext
 echo "$as_me:$LINENO: result: $ac_file" >&5
 echo "${ECHO_T}$ac_file" >&6
 
-	# Check the compiler produces executables we can run.  If not, either
+# Check the compiler produces executables we can run.  If not, either
 # the compiler is broken, or we cross compile.
 echo "$as_me:$LINENO: checking whether the C compiler works" >&5
 echo $ECHO_N "checking whether the C compiler works... $ECHO_C" >&6
@@ -2246,7 +2250,7 @@ fi
 echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
 
-	echo "$as_me:$LINENO: checking for suffix of executables" >&5
+echo "$as_me:$LINENO: checking for suffix of executables" >&5
 echo $ECHO_N "checking for suffix of executables... $ECHO_C" >&6
 if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   (eval $ac_link) 2>&5
@@ -2279,10 +2283,9 @@ rm -f conftest$ac_cv_exeext
 echo "$as_me:$LINENO: result: $ac_cv_exeext" >&5
 echo "${ECHO_T}$ac_cv_exeext" >&6
 
-	rm -f a.out
-	EXEEXT=$ac_cv_exeext
-    fi
-fi
+rm -f a.out a.exe
+EXEEXT=$ac_cv_exeext
+
 
 
 BFLAGS='$(AM_BFLAGS)'
@@ -2854,6 +2857,10 @@ echo "${ECHO_T}$result" >&6
     else
 		echo "$as_me:$LINENO: result: not found" >&5
 echo "${ECHO_T}not found" >&6
+		if ! test -z ""; then
+		    { echo "$as_me:$LINENO: WARNING: Please, visit " >&5
+echo "$as_me: WARNING: Please, visit " >&2;}
+		fi
 		{ { echo "$as_me:$LINENO: error: Required module $module not found in library camlp4" >&5
 echo "$as_me: error: Required module $module not found in library camlp4" >&2;}
    { (exit 1); exit 1; }; }
