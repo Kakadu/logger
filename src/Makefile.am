@@ -1,6 +1,12 @@
 # define macros that creates directiries
 mkinstalldirs = $(INSTALL_SCRIPT) -d
 
+if MINGW32
+    MKTEMP=$(top_srcdir)/config/mktemp.sh
+else
+    MKTEMP=mktemp
+endif
+
 # type in sources here
 SOURCES = pa_log.ml
 
@@ -117,7 +123,7 @@ $(CMXA): $(CMX4CMXA)
 .PHONY: update-revision
 update-revision: $(top_srcdir)/VERSION
 	@umask 022; \
-	tmp_version=`mktemp VERSION.XXXXXX`; \
+	tmp_version=`$(MKTEMP) VERSION.XXXXXX`; \
 	revision=`grep "\\$$Revision:" $< | sed -e 's,^\\$$,,' -e 's, \\$$$$,,'`; \
 	date=`LC_TIME=C date`; \
 	echo "\$$$$revision \$$" > $$tmp_version; \
