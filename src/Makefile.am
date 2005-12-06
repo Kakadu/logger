@@ -1,6 +1,7 @@
 # define macros that creates directiries
 mkinstalldirs = $(INSTALL_SCRIPT) -d
 
+# define macros that creates temporary files
 if MINGW32
     MKTEMP=$(top_srcdir)/config/mktemp.sh
 else

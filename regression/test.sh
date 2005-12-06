@@ -41,7 +41,7 @@ PATH=${OLDPATH}
 
 # Compare check outputs to saved samples
 for i in ${CHECKS}; do
-    if ! diff -u orig/${i} ${i} > ${i}.diff; then
+    if ! diff -ubB orig/${i} ${i} > ${i}.diff; then
 	echo "${TEST}: FAILED (see ${i}.diff)"
 	ERROR=$((${ERROR} + 1))
     else
