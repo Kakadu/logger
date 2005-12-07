@@ -5,7 +5,7 @@ if test $# = 0; then
     exit 1
 fi
 
-TEST=$1
+TEST=`basename $1`
 ERROR=0
 
 # List of program to run

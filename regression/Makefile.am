@@ -1,6 +1,6 @@
 TESTS = test001 test002 test003 test004 test005 test006
 
-TESTS_ENVIRONMENT = ./test.sh
+TESTS_ENVIRONMENT = $(srcdir)/test.sh
 
 PARSER_INCLUDES += -I $(top_srcdir)/src
 #MODULE_INCLUDES += -I $(top_srcdir)/src
