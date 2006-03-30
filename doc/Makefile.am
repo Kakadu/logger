@@ -1,6 +1,7 @@
-PARSER_INCLUDES += -I $(OCAMLLIB)/camlp4
+PARSER_INCLUDES += -I $(OCAMLLIB)/camlp4 pr_o.cmo
+
 # OCaml parser call with flags
-#AM_P4FLAGS := -pp "$(CAMLP4O) $(PARSER_INCLUDES) pa_log.cmo $(LOG)"
+#AM_P4FLAGS = -pp "$(CAMLP4O) $(PARSER_INCLUDES) pa_log.cmo $(LOG)"
 AM_P4FLAGS = -pp "$(CAMLP4R) $(PARSER_INCLUDES)"
 
 .PHONY: doc
@@ -9,7 +10,7 @@ doc: html/style.css
 
 html/style.css:
 	test -d html || mkdir html
-	$(OCAMLDOC) -pp "camlp4r pr_o.cmo" $(MODULE_INCLUDES) $(P4FLAGS) -d html -html \
+	$(OCAMLDOC) $(MODULE_INCLUDES) $(P4FLAGS) -d html -html \
 	-I $(top_srcdir)/src $(top_srcdir)/src/*.ml
 
 # default clean
