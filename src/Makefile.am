@@ -1,3 +1,5 @@
+# This file was synchronized with template ($Revision: 19 $)
+#
 # define macros that creates directiries
 mkinstalldirs = $(INSTALL_SCRIPT) -d
 
@@ -10,6 +12,9 @@ endif
 
 # type in sources here
 SOURCES = pa_log.ml
+# sort sources before use
+# (sorting is required for correct link order)
+#SORTED = $(shell $(OCAMLDSORT) $(SOURCES))
 
 # CMO - all compiled objects
 CMO := $(SOURCES:.ml=.cmo)
@@ -134,7 +139,7 @@ update-revision: $(top_srcdir)/VERSION
 
 # resolve compiling dependencies
 #.depend: $(SOURCES)
-#	ocamldep *.mli *.ml > .depend
+#	ocamldep $(MODULE_INCLUDES) $(PARSER_INCLUDES) $(AM_P4FLAGS) *.mli *.ml > .depend
 
 -include .depend
 

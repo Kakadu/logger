@@ -57,9 +57,9 @@ AC_SUBST(EXTRA_CMA)
 
 dnl add configure option "--enable-log"
 dnl AC_ARG_ENABLE(log,[  --enable-log            turn on log messages], LOG="-LOG")
-dnl AC_SUBST(LOG)
 dnl add configure option "--enable-debug"
 AC_ARG_ENABLE(debug,[  --enable-debug          turn on debugging], DEBUG="-g")
+AC_SUBST(LOG)
 AC_SUBST(DEBUG)
 
 AC_SUBST(ac_aux_dir)

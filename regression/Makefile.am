@@ -19,6 +19,7 @@ clean-am:
 	rm -f $(addsuffix -log$(EXEEXT), $(TESTS)) $(addsuffix -nolog$(EXEEXT), $(TESTS))
 	rm -f *.diff *.log
 
+# Rules to build tests
 test006-log$(EXEEXT): test006.ml
 	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) $(PARSER_INCLUDES) pr_o.cmo pa_log.cmo -LOG" -o $@ $<
 
