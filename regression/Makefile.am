@@ -2,22 +2,22 @@ TESTS = test001 test002 test003 test004 test005 test006
 
 TESTS_ENVIRONMENT = $(srcdir)/test.sh
 
+include $(top_srcdir)/m4/Makefile.am.vars
+
 PARSER_INCLUDES += -I $(top_srcdir)/src
 #MODULE_INCLUDES += -I $(top_srcdir)/src
 
-# OCaml parser call with flags
-#AM_P4FLAGS := -pp "$(CAMLP4O) $(PARSER_INCLUDES) pa_log.cmo $(LOG)"
-#AM_P4FLAGS = -pp "$(CAMLP4R) $(PARSER_INCLUDES)"
+TARGET = 
 
-# bytecode compiling flags
-AM_BFLAGS = -w p $(MODULE_INCLUDES) $(DEBUG)
-# native (optimized) compiling flags
-AM_OFLAGS = -w p $(MODULE_INCLUDES) $(DEBUG)
+CLEAN_EXTRA += $(addsuffix .cmi, $(TESTS)) $(addsuffix .cmo, $(TESTS))
+CLEAN_EXTRA += $(addsuffix -log$(EXEEXT), $(TESTS)) $(addsuffix -nolog$(EXEEXT), $(TESTS))
+CLEAN_EXTRA += *.diff *.log
 
-clean-am:
-	rm -f $(addsuffix .cmi, $(TESTS)) $(addsuffix .cmo, $(TESTS))
-	rm -f $(addsuffix -log$(EXEEXT), $(TESTS)) $(addsuffix -nolog$(EXEEXT), $(TESTS))
-	rm -f *.diff *.log
+include $(top_srcdir)/m4/Makefile.am.targets
+
+# do not call ocamldep
+.depend:
+	touch .depend
 
 # Rules to build tests
 test006-log$(EXEEXT): test006.ml
@@ -39,3 +39,5 @@ test005-log$(EXEEXT): test005.ml
 	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP4O) $(PARSER_INCLUDES) pr_o.cmo pa_log.cmo" -o $@ $<
 
 $(TESTS): $(addsuffix -log$(EXEEXT), $(TESTS)) $(addsuffix -nolog$(EXEEXT), $(TESTS))
+
+include $(top_srcdir)/m4/Makefile.am.rules

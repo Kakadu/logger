@@ -25,11 +25,11 @@ AC_PROG_OCAML_TOOLS
 dnl ... for parser
 AC_PROG_CAMLP4
 dnl ... for ocamlfind
-dnl AC_PROG_FINDLIB
+AC_PROG_FINDLIB
 dnl set OCAMLFIND_TRUE an OCAMLFIND_FALSE in Makefile
-dnl AM_CONDITIONAL(OCAMLFIND, test "$have_ocamlfind" = "yes")
+AM_CONDITIONAL(OCAMLFIND, test "$have_ocamlfind" = "yes")
 dnl ... for ocamldsort
-dnl AC_PROG_OCAMLDSORT
+AC_PROG_OCAMLDSORT
 
 dnl add configure option "--with-sitelib"
 AC_ARG_OCAML_SITELIB
