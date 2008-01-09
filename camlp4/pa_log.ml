@@ -73,22 +73,23 @@
 
 (**/**)
 
-#load "pa_extend.cmo";
-#load "q_MLast.cmo";
+open Camlp4.PreCast;
+open Syntax;
 
-open Pcaml;
+module P = Camlp4.Printers.OCaml.Make (Camlp4.PreCast.Syntax);
 
 value log_enabled = ref False;
 value log_views = ref [];
 
-EXTEND
+EXTEND Gram
   GLOBAL: expr;
   expr: LEVEL "top" [ 
     [ "REPR"; "("; e = expr; ")" -> 
-        let str = Printf.sprintf "\"%s\"" (string_of pr_expr e) in 
-        let str = Printf.sprintf "%S" str in       
-        let str = String.sub str 3 ((String.length str) - 6) in
-        <:expr<($str:str$, $e$)>> 
+        let buf = Buffer.create 256 in
+        let _   = Format.bprintf buf "%a@?" (new P.printer ())#expr e in
+        let str = Printf.sprintf "%S" (Buffer.contents buf) in       
+        let str = String.sub str 1 ((String.length str) - 2) in 
+        <:expr<($str:str$, $e$)>>        
     ] |
     [ "LOG"; args = args; "("; e = expr; ")" -> 
         if log_enabled.val 
@@ -115,11 +116,11 @@ EXTEND
   ];
 
   arglist: [
-    ["["; list = LIST1 LIDENT SEP ","; "]" -> list]
+    ["["; list = LIST1 [x = LIDENT -> x] SEP ","; "]" -> list]
   ];
 
 END;
 
-add_option "-LOG" (Arg.Set log_enabled) " - enable logging";
-add_option "-VIEW" (Arg.String (fun s -> log_views.val := [s :: log_views.val])) 
-           "<name> - enable logging the specified view";
+Camlp4.Options.add "-LOG" (Arg.Set log_enabled) " - enable logging";
+Camlp4.Options.add "-VIEW" (Arg.String (fun s -> log_views.val := [s :: log_views.val])) 
+                   "<name> - enable logging the specified view";
