@@ -24,6 +24,9 @@ dnl ... for supplementary tools
 AC_PROG_OCAML_TOOLS
 dnl ... for parser
 AC_PROG_CAMLP4
+AM_CONDITIONAL(CAMLP4, test "$have_camlp4" = "yes")
+AC_PROG_CAMLP5
+AM_CONDITIONAL(CAMLP5, test "$have_camlp5" = "yes")
 dnl ... for ocamlfind
 AC_PROG_FINDLIB
 dnl set OCAMLFIND_TRUE an OCAMLFIND_FALSE in Makefile
@@ -36,20 +39,30 @@ AC_ARG_OCAML_SITELIB
 
 AC_SUBST(CFLAGS)
 
+
 dnl check for parser module
 dnl usage:
 dnl module name, file name to use with "#load",
 dnl first dir <space> second dir <space> etc., module homepage.
+if test -n "$CAMLP4"; then
 AC_CHECK_CAMLP4_MODULE(pa_extend, pa_extend.cmo, +camlp4)
 AC_CHECK_CAMLP4_MODULE(q_MLast, q_MLast.cmo, +camlp4)
 AC_CHECK_CAMLP4_MODULE(Pr_o, pr_o.cmo, +camlp4)
 AC_SUBST(PARSER_INCLUDES)
+fi
+
+if test -n "$CAMLP5"; then
+AC_CHECK_CAMLP5_MODULE(pa_extend, pa_extend.cmo, +camlp5)
+AC_CHECK_CAMLP5_MODULE(pa_pprintf, pa_pprintf.cmo, +camlp5)
+AC_CHECK_CAMLP5_MODULE(q_MLast, q_MLast.cmo, +camlp5)
+AC_CHECK_CAMLP5_MODULE(Pr_o, pr_o.cmo, +camlp5)
+AC_SUBST(PARSER_INCLUDES)
+fi
 
 dnl check for compiler module
 dnl usage:
 dnl library name, modules to open,
 dnl 1st dir <space> 2nd dir <space> etc., library homepage.
-AC_CHECK_OCAML_MODULE(camlp4, Pcaml)
 dnl more module checks
 dnl AC_CHECK_OCAML_MODULE(libname, Module1 Module2, ../libdir, http://www.example.com/libname)
 AC_SUBST(MODULE_INCLUDES)
@@ -66,8 +79,11 @@ AC_SUBST(ac_aux_dir)
 dnl produce output files
 AC_CONFIG_FILES([
 Makefile
-doc/Makefile
-src/Makefile
-regression/Makefile
+camlp4/Makefile
+camlp4/regression/Makefile
+camlp4/doc/Makefile
+camlp5/Makefile
+camlp5/regression/Makefile
+camlp5/doc/Makefile
 ])
 AC_OUTPUT

@@ -4,8 +4,7 @@ TESTS_ENVIRONMENT = $(srcdir)/test.sh
 
 include $(top_srcdir)/m4/Makefile.am.vars
 
-PARSER_INCLUDES += -I $(top_srcdir)/src
-#MODULE_INCLUDES += -I $(top_srcdir)/src
+PARSER_INCLUDES += -I $(top_srcdir)/camlp4
 
 TARGET = 
 

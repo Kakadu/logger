@@ -1,5 +1,7 @@
-SUBDIRS = src doc regression
+SUBDIRS = camlp4 camlp5
 
 .PHONY: doc
 doc:
-	(cd doc; make doc)
+	for dir in $(SUBDIRS); do \
+		(cd $$dir; make doc) \
+	done
