@@ -23,7 +23,7 @@ AC_PROG_OCAML
 dnl ... for supplementary tools
 AC_PROG_OCAML_TOOLS
 dnl ... for parser
-AC_PROG_CAMLP4
+AC_PROG_CAMLP4(3.10.0)
 AM_CONDITIONAL(CAMLP4, test "$have_camlp4" = "yes")
 AC_PROG_CAMLP5
 AM_CONDITIONAL(CAMLP5, test "$have_camlp5" = "yes")

@@ -1,11 +1,6 @@
 # type in sources here
-if CAMLP4
 SOURCES = pa_log.ml
 SUBDIRS = regression doc
-else
-SOURCES =
-SUBDIRS =
-endif
 
 .PHONY: doc
 doc:
