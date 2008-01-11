@@ -11,5 +11,5 @@ endif
 .PHONY: doc
 doc:
 	for dir in $(SUBDIRS); do \
-		(cd $$dir; make doc) \
+		test "$$dir" = "." || (cd $$dir; make doc) \
 	done
