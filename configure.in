@@ -44,13 +44,6 @@ dnl check for parser module
 dnl usage:
 dnl module name, file name to use with "#load",
 dnl first dir <space> second dir <space> etc., module homepage.
-if test -n "$CAMLP4"; then
-AC_CHECK_CAMLP4_MODULE(pa_extend, pa_extend.cmo, +camlp4)
-AC_CHECK_CAMLP4_MODULE(q_MLast, q_MLast.cmo, +camlp4)
-AC_CHECK_CAMLP4_MODULE(Pr_o, pr_o.cmo, +camlp4)
-AC_SUBST(PARSER_INCLUDES)
-fi
-
 if test -n "$CAMLP5"; then
 AC_CHECK_CAMLP5_MODULE(pa_extend, pa_extend.cmo, +camlp5)
 AC_CHECK_CAMLP5_MODULE(pa_pprintf, pa_pprintf.cmo, +camlp5)
