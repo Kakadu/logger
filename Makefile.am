@@ -1,11 +1,11 @@
-SUBDIRS=.
+SUBDIRS = . $(P4_SUBDIR) $(P5_SUBDIR)
 
 if CAMLP4
-SUBDIRS+=camlp4
+P4_SUBDIR = camlp4
 endif
 
 if CAMLP5
-SUBDIRS+=camlp5
+P5_SUBDIR = camlp5
 endif
 
 .PHONY: doc
