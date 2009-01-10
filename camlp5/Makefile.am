@@ -16,8 +16,5 @@ TARGET := $(CMO) $(CMI)
 
 .PHONY: doc
 doc:
-	for dir in $(SUBDIRS); do \
-		(cd $$dir; make doc) \
-	done
 
 include $(top_srcdir)/m4/Makefile.am.rules
