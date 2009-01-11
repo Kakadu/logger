@@ -5,7 +5,7 @@ SUBDIRS = regression doc
 include $(top_srcdir)/m4/Makefile.am.vars
 
 # overwrite some variables
-PXFLAGS = -pp "$(CAMLP4RF) $(PARSER_INCLUDES)"
+PXFLAGS = -pp "$(CAMLP4OF) $(PARSER_INCLUDES)"
 CAMLPXLIB = $(CAMLP4LIB)
 MODULE_INCLUDES += -I "$(CAMLP4LIB)"
 

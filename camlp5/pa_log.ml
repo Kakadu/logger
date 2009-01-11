@@ -1,5 +1,5 @@
 (**************************************************************************
- *  Copyright (C) 2005
+ *  Copyright (C) 2005-2009
  *  Dmitri Boulytchev (db@tepkom.ru), St.Petersburg State University
  *  Universitetskii pr., 28, St.Petersburg, 198504, RUSSIA    
  *
@@ -21,16 +21,21 @@
  *  (enclosed in the file COPYING).
  **************************************************************************)
 
-(** This module provides the syntax extensions to facilitate printing the 
-    log traces. Two extensions supplied: LOG and REPR.
+(** Syntax extensions to facilitate printing the log traces. 
 
-    LOG extends expression with the construction 
+    Two extensions supplied: [LOG] and [REPR].
+
+    [LOG] extends expression and str_item with the construct
 
     {C [LOG <view-specification> ( <expression> )]}
 
-    Here the [<view-specification>] is the optional comma-separated list
+    or
+
+    {C [LOG <view-specification> ( <str_item> )]}
+
+    respectively. Here [<view-specification>] is the optional comma-separated list
     of identifiers enclosed in square brackets. Each listed identifier 
-    attaches the LOG expression to the corresponding view. Examples:
+    attaches the [LOG] construct to the corresponding view. Examples:
 
     [LOG (Printf.printf "Log message\n")]
 
@@ -41,24 +46,24 @@
     [LOG[firstView, secondView] (Printf.printf "First and Second View\n")]
 
     Here the first [LOG] expression attached to no views, second expression attached
-    to [firstView], third - to [secondView], and forth - to both [firstView] and [secondView].
+    to [firstView], third --- to [secondView], and forth --- to both [firstView] and [secondView].
 
-    By default all views are disbled and so substituted with expression [()]. To enable
-    certain view one has to pass the option [-VIEW viewName] to [camlp4] :
+    By default all views are disabled and so substituted with either expression [()] or
+    definition [let _ = ()]. To enable certain view one has to pass the option [-VIEW viewName] to [camlp4] :
 
     {C [ocamlc -pp "camlp4o pa_log.cmo -VIEW firstView" foo.ml]}
 
-    All [LOG] expressions attached to specified view will be enabled. There may be more
-    than one [-VIEW] option specified.
+    All [LOG] expressions attached to specified view will be enabled. More than
+    one [-VIEW] options may be specified.
 
     Finally the option [-LOG] enables {i all} [LOG] expressions regardless the
     views.
 
-    REPR construction extends expression as well and has the form
+    Construct [REPR] extends expression and has the form
 
     {C [REPR ( <expression> )]}
 
-    Each REPR expression substituted with the pair. The first member of the pair is the
+    Each [REPR] expression is substituted with the pair. The first member of the pair is the
     string representation of the expression given as an argument to [REPR], the second - 
     its value. For example
 
@@ -71,18 +76,38 @@
     The examples are given in the [regression] subdirectory.    
 *)
 
-(**/**)
+#load "pa_extend.cmo";;
+#load "q_MLast.cmo";;
 
-#load "pa_extend.cmo";
-#load "q_MLast.cmo";
+open Pcaml
 
-open Pcaml;
+let log_enabled = ref false
+let log_views = ref []
 
-value log_enabled = ref False;
-value log_views = ref [];
+let conditional default args e = 
+  if !log_enabled
+  then e 
+  else match args with
+    None      -> default
+  | Some list -> 
+      try              
+        ignore 
+           (List.find 
+               (fun view -> 
+                  try ignore (List.find (fun x -> x = view) list); true with Not_found -> false
+               )
+               !log_views
+           ); 
+        e              
+      with Not_found -> default
 
 EXTEND
-  GLOBAL: expr;
+  GLOBAL: expr str_item;
+
+  str_item: BEFORE "top" [
+    ["LOG"; args = args; "{"; item = str_item; "}" -> conditional (<:str_item< value _ = () >>) args item] 
+  ];
+
   expr: LEVEL "top" [ 
     [ "REPR"; "("; e = expr; ")" -> 
         let str = Printf.sprintf "\"%s\"" (Eprinter.apply pr_expr Pprintf.empty_pc e) in 
@@ -90,24 +115,7 @@ EXTEND
         let str = String.sub str 3 ((String.length str) - 6) in
         <:expr<($str:str$, $e$)>> 
     ] |
-    [ "LOG"; args = args; "("; e = expr; ")" -> 
-        if log_enabled.val 
-        then e 
-        else match args with
-          [ None      -> <:expr<()>>
-          | Some list -> 
-            try
-              do {
-               ignore (List.find (fun view -> 
-                         try do {ignore (List.find (fun x -> x = view) list); True} with [Not_found -> False]
-                        ) 
-                        log_views.val
-                      ); 
-               e
-              }
-            with [Not_found -> <:expr<()>>]
-          ]
-    ] 
+    [ "LOG"; args = args; "("; e = expr; ")" -> conditional <:expr< () >> args e ]
   ];
 
   args: [
@@ -121,5 +129,5 @@ EXTEND
 END;
 
 add_option "-LOG" (Arg.Set log_enabled) " - enable logging";
-add_option "-VIEW" (Arg.String (fun s -> log_views.val := [s :: log_views.val])) 
+add_option "-VIEW" (Arg.String (fun s -> log_views := s :: !log_views)) 
            "<name> - enable logging the specified view";
