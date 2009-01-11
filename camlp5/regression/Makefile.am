@@ -1,4 +1,4 @@
-TESTS = test001 test002 test003 test004 test005 test006
+TESTS = test001 test002 test003 test004 test005 test006 test007
 
 TESTS_ENVIRONMENT = $(srcdir)/test.sh
 
@@ -19,6 +19,9 @@ include $(top_srcdir)/m4/Makefile.am.targets
 	touch .depend
 
 # Rules to build tests
+test007-log$(EXEEXT): test007.ml
+	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP5O) $(PARSER_INCLUDES) pr_o.cmo pa_log.cmo -LOG" -o $@ $<
+
 test006-log$(EXEEXT): test006.ml
 	$(OCAMLC) $(BFLAGS) -pp "$(CAMLP5O) $(PARSER_INCLUDES) pr_o.cmo pa_log.cmo -LOG" -o $@ $<
 

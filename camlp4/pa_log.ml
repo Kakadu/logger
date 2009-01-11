@@ -23,15 +23,15 @@
 
 (** Syntax extensions to facilitate printing the log traces. 
 
-    Two extensions supplied: [LOG] and [REPR].
+    Two extensions supplied: [LOG] ([LOGS]) and [REPR].
 
-    [LOG] extends expression and str_item with the construct
+    [LOG] ([LOGS]) extends expression and str_item with the constructs
 
     {C [LOG <view-specification> ( <expression> )]}
 
     or
 
-    {C [LOG <view-specification> ( <str_item> )]}
+    {C [LOGS <view-specification> ( <str_item> )]}
 
     respectively. Here [<view-specification>] is the optional comma-separated list
     of identifiers enclosed in square brackets. Each listed identifier 
@@ -107,8 +107,8 @@ let conditional default args e =
 
 EXTEND Gram
   GLOBAL: expr str_item;
-  str_item: AFTER "top" [
-    [ "LOG"; args = args; "("; item = str_item; ")" -> conditional (<:str_item< let _ = () >>) args item ]
+  str_item: LEVEL "top" [
+    [ "LOGS"; args = args; "("; item = str_item; ")" -> conditional (<:str_item< let _ = () >>) args item ]
   ];
 
   expr: LEVEL "top" [ 
